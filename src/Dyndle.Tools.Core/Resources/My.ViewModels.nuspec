@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:nuget="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>My.ViewModels</id>
+    <version></version>
+    <authors>You</authors>
+    <owners>You</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>ViewModels generated from Tridion</description>
+    <releaseNotes>
+    </releaseNotes>
+    <tags>>SDLTridion SDL Tridion Sites Dyndle DD4T ViewModels</tags> 
+    <dependencies>
+      <dependency id="DD4T.Core" version="2.5" />
+      <dependency id="DD4T.Mvc" version="2.5" />
+    </dependencies>
+  </metadata>
+</package>
