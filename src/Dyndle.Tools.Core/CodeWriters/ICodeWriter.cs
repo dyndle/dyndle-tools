@@ -6,7 +6,7 @@ namespace Dyndle.Tools.Core.CodeWriters
     public interface ICodeWriter
     {
         IDictionary<string, string> WriteCode();
-        string WriteHeader();
+        string WriteHeader(string overrideNamespace = null);
         string WriteFooter();
     }
 }

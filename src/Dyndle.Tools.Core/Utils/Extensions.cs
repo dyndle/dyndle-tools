@@ -20,5 +20,14 @@ namespace Dyndle.Tools.Core.Utils
                 yield return e;
             }
         }
+
+        public static string UCFirst(this string input)
+        {
+            return input.Substring(0, 1).ToUpperInvariant() + input.Substring(1);
+        }
+        public static string LCFirst(this string input)
+        {
+            return input.Substring(0, 1).ToLowerInvariant() + input.Substring(1, input.Length - 1);
+        }
     }
 }

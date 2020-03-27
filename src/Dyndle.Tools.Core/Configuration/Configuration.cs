@@ -101,10 +101,13 @@ namespace Dyndle.Tools.Core
         public bool IdentifyModelsBySchemaTitle { get; set; }
         public bool AnalyzeOnly { get; set; }
         public string ModelAttributeName { get; set; }
+        public string PageModelAttributeName { get; set; }
         public IEnumerable<string> UsingNamespaces { get; set; }
         public IEnumerable<string> BaseClasses { get; set; }
         public IEnumerable<string> BaseClassesForMultimedia { get; set; }
         public IEnumerable<string> BaseClassesForEmbedded { get; set; }
+        public IEnumerable<string> BaseClassesForPages { get; set; }
+
         public bool NoRenderData { get; set; }
         public string Owner { get; set; }
 

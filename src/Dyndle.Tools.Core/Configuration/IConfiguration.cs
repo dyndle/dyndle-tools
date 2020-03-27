@@ -23,12 +23,15 @@ namespace Dyndle.Tools.Core
         bool IdentifyModelsBySchemaTitle { get; }
         bool AnalyzeOnly { get; }
         string ModelAttributeName { get; }
+        string PageModelAttributeName { get; }
         IEnumerable<string> UsingNamespaces { get; }
         IEnumerable<string> BaseClasses { get; }
         bool NoRenderData { get; }
         string Owner { get; }
         IEnumerable<string> BaseClassesForMultimedia { get; }
         IEnumerable<string> BaseClassesForEmbedded { get; }
+        IEnumerable<string> BaseClassesForPages { get; set; }
+
         string PublicationId { get; }
         string FolderId { get; }
         string SchemaId { get; }

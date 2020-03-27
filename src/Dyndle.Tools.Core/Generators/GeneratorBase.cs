@@ -147,11 +147,15 @@ namespace Dyndle.Tools.Core.Generators
             {
                 var targetDir = contentDir.FullName;
                 var fileName = className;
+
+                string overrideNamespace = Config.ModelNamespace;
+
                 if (className.Contains("/"))
                 {
                     var segments = className.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
                     foreach (var f in segments.Take(segments.Length-1)) // take everything except the last segment (which is the file name)
                     {
+                        overrideNamespace += "." + f.UCFirst();
                         log.Debug($"about to combine {targetDir} and {f}");
                         targetDir = Path.Combine(targetDir, f);
                         if (!Directory.Exists(targetDir))
@@ -165,7 +169,7 @@ namespace Dyndle.Tools.Core.Generators
                 // if you chose to package as a NuGET package, there is one file per class
                 // so the using statements must be added for each file/class
                 StringBuilder sb = new StringBuilder();
-                sb.Append(CodeWriter.WriteHeader());
+                sb.Append(CodeWriter.WriteHeader(overrideNamespace));
                 sb.Append(code[className]);
                 sb.Append(CodeWriter.WriteFooter());
                 File.WriteAllText(Path.Combine(targetDir, fileName + FileExtension), sb.ToString());

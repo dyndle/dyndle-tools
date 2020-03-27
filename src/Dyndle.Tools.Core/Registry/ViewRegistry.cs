@@ -111,10 +111,12 @@ namespace Dyndle.Tools.Core.Registry
 
                     if (allAssociatedModels.Count() > 1)
                     {
-                        _log.Info($"Template {template.Title} is linked to more than one schema. We need to merge models before we can continue");
-                        var mergedModel = ModelRegistry.MergeModelDefinitions(allAssociatedModels);
-                        viewDefinition.AssociatedModelDefinition = mergedModel;
-                        viewDefinition.ModelTypeName = mergedModel.TypeName;
+                        _log.Warn($"found component template {template.Title} ({template.Id}) with multiple associated schemas. We will use the base class {Config.BaseClasses.FirstOrDefault()} instead");
+                        viewDefinition.ModelTypeName = Config.BaseClasses.FirstOrDefault();
+                        //_log.Info($"Template {template.Title} is linked to more than one schema. We need to merge models before we can continue");
+                        //var mergedModel = ModelRegistry.MergeModelDefinitions(allAssociatedModels);
+                        //viewDefinition.AssociatedModelDefinition = mergedModel;
+                        //viewDefinition.ModelTypeName = mergedModel.TypeName;
                     }
                     else if (allAssociatedModels.Count() == 0)
                     {
@@ -123,7 +125,7 @@ namespace Dyndle.Tools.Core.Registry
                     }
                     else
                     {
-                        viewDefinition.AssociatedModelDefinition = ModelRegistry.GetViewModelDefinition(associatedSchemas.First().Id);
+                        viewDefinition.AssociatedModelDefinition = allAssociatedModels.First();
                         viewDefinition.ModelTypeName = viewDefinition.AssociatedModelDefinition.TypeName;
                     }
 

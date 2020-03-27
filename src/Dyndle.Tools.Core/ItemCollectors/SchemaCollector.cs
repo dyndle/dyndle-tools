@@ -85,7 +85,7 @@ namespace Dyndle.Tools.Core.ItemCollectors
                         list.Insert(0, schema);// embedded schemas are always needed by other schemas, it saves us some rounds of parsing if we insert them at the top of the list
                         continue;
                     }
-                    if (schema.Purpose == SchemaPurpose.Component || schema.Purpose == SchemaPurpose.Multimedia || schema.Purpose == SchemaPurpose.Metadata)
+                    if (schema.Purpose == SchemaPurpose.Component || schema.Purpose == SchemaPurpose.Multimedia)
                     {
                         list.Add(schema);
                     }

@@ -113,7 +113,7 @@ namespace Dyndle.Tools.Core.CodeWriters
         }
 
         public abstract IDictionary<string, string> WriteCode();
-        public abstract string WriteHeader();
+        public abstract string WriteHeader(string overrideNamespace = null);
         public abstract string WriteFooter();
     }
 }

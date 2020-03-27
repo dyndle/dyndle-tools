@@ -23,21 +23,35 @@ namespace Dyndle.Tools.Core.CodeWriters
             ModelRegistry modelRegistry = ModelRegistry.GetInstance(Config);
 
             log.DebugFormat("Started GenerateCode with {0} models", modelRegistry.ViewModels.Count);
-            var uniqueViewModels = modelRegistry.UniqueViewModels;
-            log.DebugFormat("Unique view models: {0}", uniqueViewModels.Count);
             sb.Indent(false);
-            var modelAttributeName = Config.ModelAttributeName;
-            foreach (var modelDefinition in uniqueViewModels)
+          
+            foreach (var modelDefinition in modelRegistry.UniqueViewModels)
             {
+                string attributeName = "";
+                string attributeParams = "";
+                if (modelDefinition.Purpose == Tridion.ContentManager.CoreService.Client.SchemaPurpose.Region)
+                {
+                    attributeName = Config.PageModelAttributeName;
+                    attributeParams = string.Format("TemplateTitle = \"{0}\"", string.IsNullOrEmpty(modelDefinition.RootElementName) ? modelDefinition.Title : modelDefinition.RootElementName);
+                }
+                else
+                {
+                    attributeName = Config.ModelAttributeName;
+                    attributeParams = string.Format("\"{0}\", {1}", string.IsNullOrEmpty(modelDefinition.RootElementName) ? modelDefinition.Title : modelDefinition.RootElementName,
+                    modelDefinition.Purpose == Tridion.ContentManager.CoreService.Client.SchemaPurpose.Embedded ? "false" : "true");
+                }
                 //var implRenderableViewModel = viewModelDefinition.Purpose == Tridion.ContentManager.CoreService.Client.SchemaPurpose.Component ? ", IRenderableViewModel" : "";
                 sb.AppendLine("///<summary>");
-                sb.AppendLine("/// Class is auto-generated from Tridion schema {0} ({1})", modelDefinition.Title, modelDefinition.TcmUri);
+                sb.AppendLine("/// Class is auto-generated from Tridion {2} {0} ({1})", modelDefinition.Title, modelDefinition.TcmUri, modelDefinition.TcmUri.EndsWith("-128") ? "page template" : "schema");
                 sb.AppendLine("/// Date: {0}", DateTime.Now);
                 sb.AppendLine("/// </summary>");
-                sb.AppendLine("[{0}(\"{1}\", {2})]",
-                    modelAttributeName, string.IsNullOrEmpty(modelDefinition.RootElementName) ? modelDefinition.Title : modelDefinition.RootElementName,
-                    modelDefinition.Purpose == Tridion.ContentManager.CoreService.Client.SchemaPurpose.Embedded ? "false" : "true");
-                if (modelDefinition.Purpose == Tridion.ContentManager.CoreService.Client.SchemaPurpose.Multimedia)
+                sb.AppendLine("[{0}({1})]",
+                    attributeName, attributeParams);
+                if (modelDefinition.Purpose == Tridion.ContentManager.CoreService.Client.SchemaPurpose.Region) // note: for page models, the schemapurpose is always set to Region, even if the model is based on a page template!
+                {
+                    sb.AppendLine("public partial class {0} : {1}", modelDefinition.TypeName, string.Join(",", Config.BaseClassesForPages));
+                }
+                else if (modelDefinition.Purpose == Tridion.ContentManager.CoreService.Client.SchemaPurpose.Multimedia)
                 {
                     sb.AppendLine("public partial class {0} : {1}", modelDefinition.TypeName, string.Join(",", Config.BaseClassesForMultimedia));
                 }
@@ -80,7 +94,7 @@ namespace Dyndle.Tools.Core.CodeWriters
             return class2code;
         }
 
-        public override string WriteHeader()
+        public override string WriteHeader(string overrideNamespace = null)
         {
             IndentedStringBuilder sb = new IndentedStringBuilder(Config.IndentNrOfSpaces);
             sb.AppendLine("using System;");
@@ -90,13 +104,14 @@ namespace Dyndle.Tools.Core.CodeWriters
             sb.AppendLine("using DD4T.Mvc.ViewModels.Attributes;");
             sb.AppendLine("using DD4T.ViewModels.Attributes;");
             sb.AppendLine("using DD4T.ViewModels.Base;");
+            sb.AppendLine("using Dyndle.Modules.Core.Models;");
             foreach (var usingStatement in Config.UsingNamespaces)
             {
                 sb.AppendLine($"using {usingStatement};");
             }
 
             sb.AppendLine("");
-            sb.AppendLine("namespace {0}", Config.ModelNamespace);
+            sb.AppendLine("namespace {0}", overrideNamespace ?? Config.ModelNamespace);
             sb.Indent();
             return sb.ToString();
         }

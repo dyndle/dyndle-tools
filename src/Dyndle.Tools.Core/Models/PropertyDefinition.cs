@@ -58,6 +58,7 @@ namespace Dyndle.Tools.Core.Models
             }
         }
 
+        public bool IsComplexType => FieldType == FieldType.ComponentLink || FieldType == FieldType.MultiMediaLink || FieldType == FieldType.Embedded;
       
 
         public string GetPropertyAttribute(string className)

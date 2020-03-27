@@ -57,8 +57,11 @@ namespace Dyndle.Tools.CLI
         [Option("identify-by-title", Required = false, HelpText = "Use schema title to identify the ViewModel classes")]
         public bool IdentifyByTitle { get; set; }
 
-        [Option("model-attribute", Required = false, HelpText = "Model attribute", Default = "ContentModel")]
+        [Option("model-attribute", Required = false, HelpText = "Entity model attribute", Default = "ContentModel")]
         public string ModelAttribute { get; set; }
+
+        [Option("page-model-attribute", Required = false, HelpText = "Page model attribute", Default = "PageViewModel")]
+        public string PageModelAttribute { get; set; }
 
         [Option("using", Required = false, HelpText = "Extra namespaces to include with using statements")]
         public IEnumerable<string> UsingStatements { get; set; }
@@ -78,16 +81,20 @@ namespace Dyndle.Tools.CLI
         [Option('p', "publication", Required = false, HelpText = "Tridion publication id")]
         public string PublicationId { get; set; }
 
-        [Option("base", Required = false, HelpText = "Base classes / interfaces to extend / implement", Default = new[] { "ViewModelBase", "IRenderableViewModel" })]
+        [Option("base", Required = false, HelpText = "Base classes / interfaces to extend / implement", Default = new[] { "EntityModel" })]
         public IEnumerable<string> BaseClasses { get; set; }
 
-        [Option("mmbase", Required = false, HelpText = "Base classes / interfaces to extend / implement for multimedia components", Default = new[] { "ViewModelBase", "IRenderableViewModel" })]
+        [Option("mmbase", Required = false, HelpText = "Base classes / interfaces to extend / implement for multimedia components", Default = new[] { "EntityModel" })]
         public IEnumerable<string> BaseClassesForMultimedia { get; set; }
 
-        [Option("embbase", Required = false, HelpText = "Base classes / interfaces to extend / implement for embedded fields", Default = new[] { "ViewModelBase" })]
+        [Option("embbase", Required = false, HelpText = "Base classes / interfaces to extend / implement for embedded fields", Default = new[] { "EntityModel" })]
         public IEnumerable<string> BaseClassesForEmbedded { get; set; }
 
-        [Option("no-render-data", Required = false, HelpText = "Do not include the RenderData property (use this if the base class defines RenderData)")]
+        [Option("pagebase", Required = false, HelpText = "Base classes / interfaces to extend / implement for page models", Default = new[] { "WebPage" })]
+        public IEnumerable<string> BaseClassesForPages { get; set; }
+        
+
+        [Option("no-render-data", Required = false, Default = true, HelpText = "Do not include the RenderData property (use this if the base class defines RenderData)")]
         public bool NoRenderData { get; set; }
 
         [Option("mvc", Required = false, HelpText = "Mvc version (MVC3, MVC4 or MVC5)", Default = "MVC5")]
