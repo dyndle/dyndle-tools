@@ -175,7 +175,7 @@ namespace Dyndle.Tools.Core.Generators
                 File.WriteAllText(Path.Combine(targetDir, fileName + FileExtension), sb.ToString());
             }
             // read nuspec as resource
-            string nuspec = GetResourceAsString(NuspecTemplate);
+            string nuspec = ResourceUtils.GetResourceAsString(NuspecTemplate);
 
             // save nuspec as file in the temp folder
             File.WriteAllText(Path.Combine(Config.WorkFolder.FullName, Config.PackageName + ".nuspec"), nuspec); // is this even necessary?
@@ -235,17 +235,7 @@ namespace Dyndle.Tools.Core.Generators
         }
 
       
-        private static string GetResourceAsString(string resourcePath)
-        {
-            var assembly = Assembly.GetExecutingAssembly();
 
-            using (Stream stream = assembly.GetManifestResourceStream(resourcePath))
-            using (StreamReader reader = new StreamReader(stream))
-            {
-                string result = reader.ReadToEnd();
-                return result;
-            }
-        }
    
     }
 }

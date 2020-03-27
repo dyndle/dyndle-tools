@@ -84,7 +84,7 @@ namespace Dyndle.Tools.CLI
         [Option("base", Required = false, HelpText = "Base classes / interfaces to extend / implement", Default = new[] { "EntityModel" })]
         public IEnumerable<string> BaseClasses { get; set; }
 
-        [Option("mmbase", Required = false, HelpText = "Base classes / interfaces to extend / implement for multimedia components", Default = new[] { "EntityModel" })]
+        [Option("mmbase", Required = false, HelpText = "Base classes / interfaces to extend / implement for multimedia components", Default = new[] { "MultimediaEntityModel" })]
         public IEnumerable<string> BaseClassesForMultimedia { get; set; }
 
         [Option("embbase", Required = false, HelpText = "Base classes / interfaces to extend / implement for embedded fields", Default = new[] { "EntityModel" })]

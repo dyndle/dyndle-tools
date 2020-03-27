@@ -15,6 +15,9 @@ namespace Dyndle.Tools.Core.CodeWriters
         {
         }
 
+        private static string ViewStartResourcePath => "Dyndle.Tools.Core.Resources._ViewStart.cshtml";
+        private static string LayoutResourcePath => "Dyndle.Tools.Core.Resources._GeneratedLayout.cshtml";
+
         public override IDictionary<string,string> WriteCode()
         {
             IDictionary<string, string> class2code = new Dictionary<string, string>();
@@ -30,9 +33,9 @@ namespace Dyndle.Tools.Core.CodeWriters
                 sb.AppendLine("/// Date: {0}", DateTime.Now);
                 sb.AppendLine("}");
                 sb.AppendLine("@model {0}", view.AssociatedModelDefinition.TypeName);
-                sb.AppendLine("<div class=\"dyndle-template-field\">");
+                sb.AppendLine("<div class=\"container\">");
                 sb.Indent(false);
-                RazorForModel(view.AssociatedModelDefinition, sb);
+                RazorForModel(view.AssociatedModelDefinition, view.ViewName, sb);
                 sb.Outdent(false);
                 sb.AppendLine("</div>");
 
@@ -40,19 +43,52 @@ namespace Dyndle.Tools.Core.CodeWriters
                 class2code.Add(key, sb.ToString());
                 sb.Reset();
             }
+
+            // include a layout and a viewstart
+            var viewstart = ResourceUtils.GetResourceAsString(ViewStartResourcePath);
+            var layout = ResourceUtils.GetResourceAsString(LayoutResourcePath);
+            class2code.Add("Page/_ViewStart", viewstart);
+            class2code.Add("Shared/_GeneratedLayout", layout);
             return class2code;
         }
 
-        private void RazorForModel(ModelDefinition modelDefinition, IndentedStringBuilder sb, string modelVariable = "Model")
-        {
-            sb.AppendLine("<table>");
+        private void RazorForModel(ModelDefinition modelDefinition, string viewName, IndentedStringBuilder sb, string modelVariable = "Model")
+        {            
+            sb.AppendLine("<table class=\"table table-dark\">");
             sb.AppendLine("<tr>");
             sb.AppendLine("<td>Model Type</td>");
             sb.AppendLine("<td>");
-            sb.AppendLine("@Model.GetType()");
+            sb.AppendLine($"@{modelVariable}.GetType()");
             sb.AppendLine("</td>");
             sb.AppendLine("</tr>");
-          
+            if (viewName != null)
+            {
+                sb.AppendLine("<tr>");
+                sb.AppendLine("<td>View Name</td>");
+                sb.AppendLine("<td>");
+                sb.AppendLine($"{viewName}");
+                sb.AppendLine("</td>");
+                sb.AppendLine("</tr>");
+            }
+            if (modelDefinition.Purpose == Tridion.ContentManager.CoreService.Client.SchemaPurpose.Multimedia)
+            {
+                sb.AppendLine("<tr>");
+                sb.AppendLine("<td>Multimedia</td>");
+                sb.AppendLine("<td>");
+                sb.AppendLine($"@if ({modelVariable}.Multimedia.MimeType == \"image/png\" || {modelVariable}.Multimedia.MimeType == \"image/jpeg\" || {modelVariable}.Multimedia.MimeType == \"image/gif\")");
+                sb.Indent();
+                sb.AppendLine($"<img src=\"@{modelVariable}.Multimedia.Url\" />");
+                sb.Outdent();
+                sb.AppendLine("else");
+                sb.Indent();
+                sb.AppendLine($"<a href=\"@{modelVariable}.Multimedia.Url\">@{modelVariable}.Multimedia.Url</a>");
+                sb.Outdent();
+                sb.AppendLine("</td>");
+                sb.AppendLine("</tr>");
+
+
+            }
+
             foreach (var propertyDefinition in modelDefinition.PropertyDefinitions)
             {
                 sb.Indent(false);
@@ -95,7 +131,7 @@ namespace Dyndle.Tools.Core.CodeWriters
                     {
                         // get the model definition for the embedded schema
                         var embeddedModel = ModelRegistry.GetInstance(Config).GetViewModelDefinition(propertyDefinition.TargetSchemas.FirstOrDefault()?.IdRef);
-                        RazorForModel(embeddedModel, sb, varName);
+                        RazorForModel(embeddedModel, null, sb, varName);
                     }
                 }
                 else

@@ -74,11 +74,6 @@ namespace Dyndle.Tools.Core.CodeWriters
                         modelDefinition.TypeName == propertyDefinition.Name ? propertyDefinition.Name + "Field" : propertyDefinition.Name);
                     sb.AppendLine("{ get; set; }");
                 }
-                if (modelDefinition.Purpose == Tridion.ContentManager.CoreService.Client.SchemaPurpose.Multimedia)
-                {
-                    sb.AppendLine("[Multimedia]");
-                    sb.AppendLine("public IMultimedia Multimedia { get; set; }");
-                }
 
                 if (!Config.NoRenderData)
                 {

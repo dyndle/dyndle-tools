@@ -21,12 +21,12 @@ namespace Dyndle.Tools.Core.Models
             field2PropertyTypeMapping.Add(FieldType.Number, "int");
             field2PropertyTypeMapping.Add(FieldType.ExternalLink, "string");
             field2PropertyTypeMapping.Add(FieldType.Keyword, "string");
-            field2PropertyTypeMapping.Add(FieldType.ComponentLink, configuration.BaseClasses.Any() ? configuration.BaseClasses.FirstOrDefault() : "IViewModel");
-            field2PropertyTypeMapping.Add(FieldType.MultiMediaLink, configuration.BaseClassesForMultimedia.Any() ? configuration.BaseClassesForMultimedia.FirstOrDefault() : "IViewModel");
+            field2PropertyTypeMapping.Add(FieldType.ComponentLink, configuration.BaseClasses.Any() ? configuration.BaseClasses.FirstOrDefault() : "EntityModel");
+            field2PropertyTypeMapping.Add(FieldType.MultiMediaLink, configuration.BaseClassesForMultimedia.Any() ? configuration.BaseClassesForMultimedia.FirstOrDefault() : "EntityModel");
             field2PropertyTypeMapping.Add(FieldType.Entities, "IEntityModel");
             field2PropertyTypeMapping.Add(FieldType.Regions, "IRegionModel");
             field2PropertyTypeMapping.Add(FieldType.PageTitle, "string");
-            field2PropertyTypeMapping.Add(FieldType.PageId, "string");
+            field2PropertyTypeMapping.Add(FieldType.PageId, "TcmUri");
 
 
             field2PropertyAttributeMapping.Add(FieldType.Text, "TextField");
@@ -54,7 +54,7 @@ namespace Dyndle.Tools.Core.Models
             {
                 if (TargetModels != null && TargetModels.Count > 0)
                 {
-                    return TargetModels.Count > 1 ? field2PropertyTypeMapping[FieldType] : TargetModels[0]; // NOTE: if you have more than one allowed target schema, the property will get the generic 'IViewModel' type 
+                    return TargetModels.Count > 1 ? field2PropertyTypeMapping[FieldType] : TargetModels[0]; // NOTE: if you have more than one allowed target schema, the property will get the generic 'EntityModel' type 
                 }
                 if (field2PropertyTypeMapping.ContainsKey(FieldType))
                 {

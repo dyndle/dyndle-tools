@@ -421,7 +421,7 @@ namespace Dyndle.Tools.Core.Registry
                 {
                     targetTypes.Add(Config.BaseClasses.FirstOrDefault());
                 }
-                targetTypes.Add("IViewModel");
+                targetTypes.Add("EntityModel");
                 return targetTypes;
             }
             return GetTargetModelTypes(linkedSchemas);
@@ -432,7 +432,7 @@ namespace Dyndle.Tools.Core.Registry
             List<string> targetTypes = new List<string>();
             if (!linkedSchemas.Any())
             {
-                targetTypes.Add("IViewModel");
+                targetTypes.Add("EntityModel");
                 return targetTypes;
             }
             foreach (var targetSchema in linkedSchemas)
