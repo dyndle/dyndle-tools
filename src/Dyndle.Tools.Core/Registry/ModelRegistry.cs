@@ -187,14 +187,36 @@ namespace Dyndle.Tools.Core.Registry
             //}
 
 
-            PropertyDefinition propertyDefinition = new PropertyDefinition(Config)
+            PropertyDefinition entitiesPropertyDefinition = new PropertyDefinition(Config)
             {
                 FieldType = FieldType.Entities,
                 Name = "Entities",
                 IsMultipleValue = true,
                 
             };
-            pageModel.PropertyDefinitions.Add(propertyDefinition);
+            PropertyDefinition regionsPropertyDefinition = new PropertyDefinition(Config)
+            {
+                FieldType = FieldType.Regions,
+                Name = "Regions",
+                IsMultipleValue = true,
+            };
+            PropertyDefinition pageTitlePropertyDefinition = new PropertyDefinition(Config)
+            {
+                FieldType = FieldType.PageTitle,
+                Name = "PageTitle",
+                IsMultipleValue = false,
+            };
+            PropertyDefinition pageIdPropertyDefinition = new PropertyDefinition(Config)
+            {
+                FieldType = FieldType.PageId,
+                Name = "PageId",
+                IsMultipleValue = false,
+            };
+
+            pageModel.PropertyDefinitions.Add(pageTitlePropertyDefinition);
+            pageModel.PropertyDefinitions.Add(pageIdPropertyDefinition);
+            pageModel.PropertyDefinitions.Add(regionsPropertyDefinition);
+            pageModel.PropertyDefinitions.Add(entitiesPropertyDefinition);
 
             // schema was converted into a ViewModelDefinition successfully (possibly with some unresolved fields, but we'll deal with them later!)
             // we can now add a mapping to the registry

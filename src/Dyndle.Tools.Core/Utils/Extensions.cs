@@ -29,5 +29,19 @@ namespace Dyndle.Tools.Core.Utils
         {
             return input.Substring(0, 1).ToLowerInvariant() + input.Substring(1, input.Length - 1);
         }
+
+        public static string GetSingular(this string input, bool forceDifferentValue = true)
+        {
+            if (input.EndsWith("ies"))
+            {
+                return input.Substring(0, input.Length - 3) + "y";
+            }
+            if (input.EndsWith("s"))
+            {
+                return input.Substring(0, input.Length - 1);
+            }
+            // note: when forcing a different value, the output cannot be the same as the input
+            return forceDifferentValue ? input + "Item" : input;
+        }
     }
 }

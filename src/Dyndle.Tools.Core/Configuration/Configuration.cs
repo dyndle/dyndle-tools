@@ -13,7 +13,7 @@ namespace Dyndle.Tools.Core
         public static readonly string DEFAULT_MIN_DD4T_MVC_VERSION = "2.5";
         public static readonly string DEFAULT_MODEL_NAMESPACE = "MyCompany.MyProject.Models";
         public static readonly string DEFAULT_MVC_VERSION = "MVC5";
-        public static readonly string DEFAULT_PACKAGE_NAME = "MyViewModels";
+        public static readonly string DEFAULT_PACKAGE_NAME = "MyModels";
         public static readonly string DEFAULT_PACKAGE_VERSION = "1.0.0";
         public static readonly string DEFAULT_PATH_MODELS = "/Generated/Models";
         public static readonly string DEFAULT_PATH_VIEWS = "/Areas/Core/Views";
@@ -21,6 +21,7 @@ namespace Dyndle.Tools.Core
         public static readonly int DEFAULT_INDENT_NR_OF_SPACES = 4;
         public static readonly string DEFAULT_LOG_FOLDER = Path.GetTempPath();
         public static readonly string DEFAULT_MODEL_ATTRIBUTE_NAME = "ContentModel";
+
 
         public string OutputFolder { get; set; }
 
@@ -86,7 +87,7 @@ namespace Dyndle.Tools.Core
         {
             get
             {
-                return packageName ?? (ExportType == ExportType.Models ? "MyViewModels" : "MyViews");
+                return packageName ?? (ExportType == ExportType.Models ? "MyModels" : "MyViews");
             }
             set
             {

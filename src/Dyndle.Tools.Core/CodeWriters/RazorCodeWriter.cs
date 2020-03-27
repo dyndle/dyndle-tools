@@ -46,6 +46,13 @@ namespace Dyndle.Tools.Core.CodeWriters
         private void RazorForModel(ModelDefinition modelDefinition, IndentedStringBuilder sb, string modelVariable = "Model")
         {
             sb.AppendLine("<table>");
+            sb.AppendLine("<tr>");
+            sb.AppendLine("<td>Model Type</td>");
+            sb.AppendLine("<td>");
+            sb.AppendLine("@Model.GetType()");
+            sb.AppendLine("</td>");
+            sb.AppendLine("</tr>");
+          
             foreach (var propertyDefinition in modelDefinition.PropertyDefinitions)
             {
                 sb.Indent(false);
@@ -54,22 +61,42 @@ namespace Dyndle.Tools.Core.CodeWriters
                 sb.AppendLine($"<td>{propertyDefinition.Name}</td>");
                 sb.AppendLine("<td>");
 
-                var varName = propertyDefinition.IsMultipleValue ? GetSingular(propertyDefinition.Name) : modelVariable + "." + propertyDefinition.Name;
+                var varName = propertyDefinition.IsMultipleValue ? propertyDefinition.Name?.GetSingular()?.LCFirst() : modelVariable + "." + propertyDefinition.Name;
+                sb.AppendLine($"@if ({modelVariable}.{propertyDefinition.Name} != null)");
+                sb.Indent();
                 if (propertyDefinition.IsMultipleValue)
                 {
-                    if (! propertyDefinition.IsComplexType)
+                    if ((! propertyDefinition.IsComplexType) || propertyDefinition.FieldType == FieldType.Regions)
                     {
                         sb.AppendLine("<ul>");
+                        sb.AppendLine($"@foreach (var {varName} in {modelVariable}.{propertyDefinition.Name})");
                     }
-
-                    sb.AppendLine($"@foreach (var {varName} in {modelVariable}.{propertyDefinition.Name})");
+                    else
+                    {
+                        sb.AppendLine($"foreach (var {varName} in {modelVariable}.{propertyDefinition.Name})");
+                    }
                     sb.Indent();
                 }
-                if (propertyDefinition.IsComplexType)
+                if (propertyDefinition.FieldType == FieldType.Entities)
                 {
-                    // get the model definition for the embedded schema
-                    var embeddedModel = ModelRegistry.GetInstance(Config).GetViewModelDefinition(propertyDefinition.TargetSchemas.FirstOrDefault()?.IdRef);
-                    RazorForModel(embeddedModel, sb, varName);
+                    sb.AppendLine($"@Html.RenderEntity({varName})");
+                }
+                else if (propertyDefinition.FieldType == FieldType.Regions)
+                {
+                    sb.AppendLine($"<li>Region with name: @{varName}.Name and view @{varName}.ViewName, containing @{varName}.Entities.Count entities</li>");
+                }
+                else if (propertyDefinition.IsComplexType)
+                {
+                    if (propertyDefinition.TargetSchemas == null && (propertyDefinition.FieldType == FieldType.ComponentLink || propertyDefinition.FieldType == FieldType.MultiMediaLink))
+                    {
+                        sb.AppendLine($"link without a specific target model<br/>Resolved URL: {varName}.Url");
+                    }
+                    else
+                    {
+                        // get the model definition for the embedded schema
+                        var embeddedModel = ModelRegistry.GetInstance(Config).GetViewModelDefinition(propertyDefinition.TargetSchemas.FirstOrDefault()?.IdRef);
+                        RazorForModel(embeddedModel, sb, varName);
+                    }
                 }
                 else
                 {
@@ -85,11 +112,12 @@ namespace Dyndle.Tools.Core.CodeWriters
                 if (propertyDefinition.IsMultipleValue)
                 {
                     sb.Outdent();
-                    if (!propertyDefinition.IsComplexType)
+                    if ((!propertyDefinition.IsComplexType) || propertyDefinition.FieldType == FieldType.Regions)
                     {
                         sb.AppendLine("</ul>");
                     }
                 }
+                sb.Outdent();
                 sb.AppendLine("</td>");
                 sb.Outdent(false);
                 sb.AppendLine("</tr>");
@@ -98,10 +126,7 @@ namespace Dyndle.Tools.Core.CodeWriters
             sb.AppendLine("</table>");
         }
 
-        private static string GetSingular(string name)
-        {
-            return (name.EndsWith("s") ? name.Substring(0, name.Length - 1) : name).LCFirst();
-        }
+       
 
 
         public override string WriteHeader(string overrideNamespace = null)

@@ -12,6 +12,7 @@ namespace Dyndle.Tools.Core.Models
         public SchemaPurpose Purpose { get; set; }
         public IList<PropertyDefinition> PropertyDefinitions { get; set; }
         public string TcmUri { get; set; }
+        public bool IsPageModel => Purpose == SchemaPurpose.Region;
         public bool HasUnresolvedProperties
         {
             get

@@ -65,6 +65,7 @@ namespace Dyndle.Tools.Core.CodeWriters
                 }
                 log.Debug("added partial class");
                 sb.Indent();
+               
                 foreach (var propertyDefinition in modelDefinition.PropertyDefinitions)
                 { 
                     sb.AppendLine("[{0}]", propertyDefinition.GetPropertyAttribute(modelDefinition.TypeName));
@@ -105,6 +106,8 @@ namespace Dyndle.Tools.Core.CodeWriters
             sb.AppendLine("using DD4T.ViewModels.Attributes;");
             sb.AppendLine("using DD4T.ViewModels.Base;");
             sb.AppendLine("using Dyndle.Modules.Core.Models;");
+            sb.AppendLine("using Dyndle.Modules.Core.Attributes.ViewModels;");
+            
             foreach (var usingStatement in Config.UsingNamespaces)
             {
                 sb.AppendLine($"using {usingStatement};");

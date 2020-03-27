@@ -186,7 +186,7 @@ namespace Dyndle.Tools.Core.Generators
                 Owners = Config.Owner,
                 Version = packageVersion,
                 Id = Config.PackageName,
-                Description = "ViewModels generated from schemas in Tridion"
+                Description = Config.ExportType == ExportType.Models ? "Models generated from schemas in Tridion" : "Views generated from templates in Tridion"
             };
 
             PackageBuilder builder = new PackageBuilder();

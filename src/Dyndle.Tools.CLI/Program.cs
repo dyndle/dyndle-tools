@@ -22,10 +22,10 @@ namespace Dyndle.Tools.CLI
             // Console.ReadKey();
         }
 
-      
+
 
         private static void HandleParseError(IEnumerable<Error> errs)
-        {          
+        {
             Console.ReadLine();
         }
 
@@ -43,19 +43,19 @@ namespace Dyndle.Tools.CLI
             Console.WriteLine("output created at " + packagePath);
         }
 
-        private static IConfiguration GetConfiguration (ModelOptions opts)
+        private static IConfiguration GetConfiguration(ModelOptions opts)
         {
             return GetConfiguration((Options)opts, ExportType.Models);
         }
 
         private static IConfiguration GetConfiguration(ViewOptions opts)
         {
-             return GetConfiguration((Options)opts, ExportType.Views);
+            return GetConfiguration((Options)opts, ExportType.Views);
         }
-        
+
         private static IConfiguration GetConfiguration(Options opts, ExportType exportType)
         {
-            IConfiguration c = new Configuration()
+            var c = new Configuration()
             {
                 Author = opts.Author,
                 Owner = opts.Owner,
@@ -85,7 +85,7 @@ namespace Dyndle.Tools.CLI
                 SchemaId = opts.SchemaId,
                 PackageStyle = opts.ModeClasses ? PackageStyle.CsFile : PackageStyle.Nuget,
                 ExportType = exportType
-        };
+            };            
             return c;
         }
     }

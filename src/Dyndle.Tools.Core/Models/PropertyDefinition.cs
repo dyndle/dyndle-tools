@@ -5,7 +5,7 @@ using Tridion.ContentManager.CoreService.Client;
 
 namespace Dyndle.Tools.Core.Models
 {
-    public enum FieldType { Text, MultiLineText, Xhtml, Keyword, Embedded, MultiMediaLink, ComponentLink, ExternalLink, Number, Date, Entities }
+    public enum FieldType { Text, MultiLineText, Xhtml, Keyword, Embedded, MultiMediaLink, ComponentLink, ExternalLink, Number, Date, Entities, Regions, PageTitle, PageId }
 
     public class PropertyDefinition
     {
@@ -23,7 +23,10 @@ namespace Dyndle.Tools.Core.Models
             field2PropertyTypeMapping.Add(FieldType.Keyword, "string");
             field2PropertyTypeMapping.Add(FieldType.ComponentLink, configuration.BaseClasses.Any() ? configuration.BaseClasses.FirstOrDefault() : "IViewModel");
             field2PropertyTypeMapping.Add(FieldType.MultiMediaLink, configuration.BaseClassesForMultimedia.Any() ? configuration.BaseClassesForMultimedia.FirstOrDefault() : "IViewModel");
-            field2PropertyTypeMapping.Add(FieldType.Entities, "List<IEntityModel>");
+            field2PropertyTypeMapping.Add(FieldType.Entities, "IEntityModel");
+            field2PropertyTypeMapping.Add(FieldType.Regions, "IRegionModel");
+            field2PropertyTypeMapping.Add(FieldType.PageTitle, "string");
+            field2PropertyTypeMapping.Add(FieldType.PageId, "string");
 
 
             field2PropertyAttributeMapping.Add(FieldType.Text, "TextField");
@@ -37,6 +40,9 @@ namespace Dyndle.Tools.Core.Models
             field2PropertyAttributeMapping.Add(FieldType.MultiMediaLink, "LinkedComponentField");
             field2PropertyAttributeMapping.Add(FieldType.Embedded, "EmbeddedSchemaField");
             field2PropertyAttributeMapping.Add(FieldType.Entities, "ComponentPresentations");
+            field2PropertyAttributeMapping.Add(FieldType.Regions, "ComponentPresentationRegions");
+            field2PropertyAttributeMapping.Add(FieldType.PageTitle, "PageTitle");
+            field2PropertyAttributeMapping.Add(FieldType.PageId, "PageId");
         }
 
         public bool IsResolved { get; set; }
@@ -58,7 +64,7 @@ namespace Dyndle.Tools.Core.Models
             }
         }
 
-        public bool IsComplexType => FieldType == FieldType.ComponentLink || FieldType == FieldType.MultiMediaLink || FieldType == FieldType.Embedded;
+        public bool IsComplexType => FieldType == FieldType.ComponentLink || FieldType == FieldType.MultiMediaLink || FieldType == FieldType.Embedded || FieldType == FieldType.Entities || FieldType == FieldType.Regions;
       
 
         public string GetPropertyAttribute(string className)
@@ -68,7 +74,7 @@ namespace Dyndle.Tools.Core.Models
             {
                 return propertyAttribute;
             }
-            if (this.FieldType == FieldType.Entities)
+            if (this.FieldType == FieldType.Entities || this.FieldType == FieldType.Regions)
             {
                 return propertyAttribute;
             }
