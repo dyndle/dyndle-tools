@@ -33,6 +33,13 @@ namespace Dyndle.Tools.Core.CodeWriters
                 sb.AppendLine("/// Date: {0}", DateTime.Now);
                 sb.AppendLine("}");
                 sb.AppendLine("@model {0}", view.AssociatedModelDefinition.TypeName);
+                foreach (var usingStatement in Config.UsingNamespaces)
+                {
+                    sb.AppendLine($"@using {usingStatement}");
+                }
+                sb.AppendLine($"@using {Config.ModelNamespace}.Pages");
+                sb.AppendLine($"@using {Config.ModelNamespace}.Entities");
+                sb.AppendLine("@using Dyndle.Modules.Core.Html");
                 sb.AppendLine("<div class=\"container\">");
                 sb.Indent(false);
                 RazorForModel(view.AssociatedModelDefinition, view.ViewName, sb);
@@ -167,13 +174,9 @@ namespace Dyndle.Tools.Core.CodeWriters
 
         public override string WriteHeader(string overrideNamespace = null)
         {
-            IndentedStringBuilder sb = new IndentedStringBuilder(Config.IndentNrOfSpaces);
-            foreach (var usingStatement in Config.UsingNamespaces)
-            {
-                sb.AppendLine($"using {usingStatement};");
-            }
-            return sb.ToString();
+            return string.Empty;
         }
+
         public override string WriteFooter()
         {
             return string.Empty;
