@@ -11,7 +11,7 @@ namespace Dyndle.Tools.Generator.CodeWriters
 {
     public class RazorCodeWriter : CodeWriterBase
     {
-        public RazorCodeWriter (GeneratorConfiguration config) : base(config)
+        public RazorCodeWriter (IGeneratorConfiguration config) : base(config)
         {
         }
 

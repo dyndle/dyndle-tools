@@ -11,7 +11,7 @@ namespace Dyndle.Tools.Generator.CodeWriters
     public class CsharpCodeWriter : CodeWriterBase
     {
 
-        public CsharpCodeWriter(GeneratorConfiguration config) : base(config)
+        public CsharpCodeWriter(IGeneratorConfiguration config) : base(config)
         {
         }
 

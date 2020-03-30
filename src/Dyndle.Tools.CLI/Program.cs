@@ -46,7 +46,6 @@ namespace Dyndle.Tools.CLI
 
         private static void ExportModels(ModelOptions opts)
         {
-            var configuration = ConfigurationFactory.ToConfiguration<GeneratorConfiguration>(opts);
             var env = EnvironmentManager.Get(opts.Environment);
             if (env == null)
             {
@@ -55,7 +54,7 @@ namespace Dyndle.Tools.CLI
                 return;
             }
             CoreserviceClientFactory.SetEnvironment(env);
-            var modelGenerator = new ModelGenerator(configuration);
+            var modelGenerator = new ModelGenerator(opts);
 
             var packagePath = modelGenerator.Run();
             Console.WriteLine("output created at " + packagePath);
@@ -63,7 +62,6 @@ namespace Dyndle.Tools.CLI
 
         private static void ExportViews(ViewOptions opts)
         {
-            var configuration = ConfigurationFactory.ToConfiguration<GeneratorConfiguration>(opts);
             
             var env = EnvironmentManager.Get(opts.Environment);
             if (env == null)
@@ -74,7 +72,7 @@ namespace Dyndle.Tools.CLI
             }
             CoreserviceClientFactory.SetEnvironment(env);
 
-            var viewGenerator = new ViewGenerator(configuration);
+            var viewGenerator = new ViewGenerator(opts);
 
 
             var packagePath = viewGenerator.Run();
@@ -83,63 +81,16 @@ namespace Dyndle.Tools.CLI
 
         private static void AddEnvironment(AddEnvironmentOptions opts)
         {
-            var configuration = ConfigurationFactory.ToConfiguration<EnvironmentsConfiguration>(opts);
-            IToolsModule module = new AddEnvironment(configuration);
+            IToolsModule module = new AddEnvironment(opts);
             var result = module.Run();
             Console.WriteLine(result);
         }
         private static void ListEnvironments(ListEnvironmentOptions opts)
         {
-            var configuration = ConfigurationFactory.ToConfiguration<EnvironmentsConfiguration>(opts);
-            IToolsModule module = new ListEnvironments(configuration);
+            IToolsModule module = new ListEnvironments(opts);
             var result = module.Run();
             Console.WriteLine(result);
         }
-
-        //private static IConfiguration GetConfiguration(ModelOptions opts)
-        //{
-        //    return GetConfiguration((Options)opts, ExportType.Models);
-        //}
-
-        //private static IConfiguration GetConfiguration(ViewOptions opts)
-        //{
-        //    return GetConfiguration((Options)opts, ExportType.Views);
-        //}
-
-        //private static IConfiguration GetConfiguration(Options opts, ExportType exportType)
-        //{
-        //    var c = new Configuration()
-        //    {
-        //        Author = opts.Author,
-        //        Owner = opts.Owner,
-        //        MinDD4TCoreVersion = opts.MinDD4TCoreVersion,
-        //        MinDD4TMvcVersion = opts.MinDD4TMVCVersion,
-        //        ModelNamespace = opts.ModelNamespace,
-        //        FolderInProject = opts.FolderInProject,
-        //        MvcVersion = opts.MvcVersion,
-        //        PackageName = opts.PackageName,
-        //        PackageVersion = opts.PackageVersion,
-        //        PackageAddUniqueBuildNumber = opts.PackageAddUniqueBuildNumber,
-        //        IndentNrOfSpaces = opts.IndentNrOfSpaces,
-        //        LogFolder = ".",
-        //        IdentifyModelsBySchemaTitle = opts.IdentifyByTitle,
-        //        ModelAttributeName = opts.ModelAttribute,
-        //        PageModelAttributeName = opts.PageModelAttribute,
-        //        UsingNamespaces = opts.UsingStatements,
-        //        BaseClasses = opts.BaseClasses,
-        //        BaseClassesForMultimedia = opts.BaseClassesForMultimedia,
-        //        BaseClassesForEmbedded = opts.BaseClassesForEmbedded,
-        //        BaseClassesForPages = opts.BaseClassesForPages,
-        //        NoRenderData = opts.NoRenderData,
-        //        AnalyzeOnly = opts.AnalyzeOnly,
-        //        OutputFolder = opts.OutputFolder,
-        //        PublicationId = opts.PublicationId,
-        //        FolderId = opts.FolderId,
-        //        SchemaId = opts.SchemaId,
-        //        PackageStyle = opts.ModeClasses ? PackageStyle.CsFile : PackageStyle.Nuget,
-        //        ExportType = exportType
-        //    };            
-        //    return c;
-        //}
+    
     }
 }

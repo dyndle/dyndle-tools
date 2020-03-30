@@ -22,7 +22,7 @@ namespace Dyndle.Tools.Generator.ItemCollectors
         private SessionAwareCoreServiceClient Client { get; set; }
         private ILog log;
 
-        public SchemaCollector(GeneratorConfiguration config)
+        public SchemaCollector(IGeneratorConfiguration config)
         {
             log = LogManager.GetLogger(this.GetType());
             Logger.Setup(config);

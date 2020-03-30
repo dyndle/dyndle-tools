@@ -13,8 +13,8 @@ namespace Dyndle.Tools.Environments
 {
     public class AddEnvironment : IToolsModule
     {
-        private EnvironmentsConfiguration Configuration { get; set; }
-        public AddEnvironment(EnvironmentsConfiguration configuration)
+        private IEnvironmentsConfiguration Configuration { get; set; }
+        public AddEnvironment(IEnvironmentsConfiguration configuration)
         {
             Configuration = configuration;
         }

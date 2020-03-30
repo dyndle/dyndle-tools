@@ -44,9 +44,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\IEnvironmentsConfiguration.cs" />
     <Compile Include="ListEnvironments.cs" />
     <Compile Include="AddEnvironment.cs" />
-    <Compile Include="Configuration\EnvironmentsConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

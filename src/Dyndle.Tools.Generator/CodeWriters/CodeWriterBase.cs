@@ -10,10 +10,10 @@ namespace Dyndle.Tools.Generator.CodeWriters
 {
     public abstract class CodeWriterBase : ICodeWriter
     {
-        protected GeneratorConfiguration Config { get; set; }
+        protected IGeneratorConfiguration Config { get; set; }
         protected ILog log;
 
-        public CodeWriterBase(GeneratorConfiguration config)
+        public CodeWriterBase(IGeneratorConfiguration config)
         {
             Config = config;
             log = LogManager.GetLogger(GetType());

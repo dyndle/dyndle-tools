@@ -33,9 +33,9 @@ namespace Dyndle.Tools.Generator.Registry
         }
 
         private SessionAwareCoreServiceClient Client { get; set; }
-        private GeneratorConfiguration Config { get; set; }
+        private IGeneratorConfiguration Config { get; set; }
 
-        private ModelRegistry(GeneratorConfiguration configuration)
+        private ModelRegistry(IGeneratorConfiguration configuration)
         {
             _log = LogManager.GetLogger(typeof(ModelRegistry));
             currentViewModel = null;
@@ -45,7 +45,7 @@ namespace Dyndle.Tools.Generator.Registry
             schemaCollector = new SchemaCollector(Config);
         }
 
-        public static ModelRegistry GetInstance(GeneratorConfiguration configuration)
+        public static ModelRegistry GetInstance(IGeneratorConfiguration configuration)
         {
             if (_modelRegistry == null)
             {

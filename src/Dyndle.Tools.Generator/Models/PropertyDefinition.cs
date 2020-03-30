@@ -12,7 +12,7 @@ namespace Dyndle.Tools.Generator.Models
 
         private IDictionary<FieldType, string> field2PropertyTypeMapping = new Dictionary<FieldType, string>();
         private IDictionary<FieldType, string> field2PropertyAttributeMapping = new Dictionary<FieldType, string>();
-        public PropertyDefinition(GeneratorConfiguration configuration)
+        public PropertyDefinition(IGeneratorConfiguration configuration)
         {
             field2PropertyTypeMapping.Add(FieldType.Text, "string");
             field2PropertyTypeMapping.Add(FieldType.MultiLineText, "string");

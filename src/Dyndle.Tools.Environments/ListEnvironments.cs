@@ -15,8 +15,8 @@ namespace Dyndle.Tools.Environments
 {
     public class ListEnvironments : IToolsModule
     {
-        private EnvironmentsConfiguration Configuration { get; set; }
-        public ListEnvironments(EnvironmentsConfiguration configuration)
+        private IEnvironmentsConfiguration Configuration { get; set; }
+        public ListEnvironments(IEnvironmentsConfiguration configuration)
         {
             Configuration = configuration;
         }

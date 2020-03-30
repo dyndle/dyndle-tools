@@ -15,6 +15,7 @@ using Dyndle.Tools.Generator.CodeWriters;
 using Dyndle.Tools.Generator.ItemCollectors;
 using Dyndle.Tools.Generator.Models;
 using Dyndle.Tools.Core.Utils;
+using Dyndle.Tools.Generator.Configuration;
 
 namespace Dyndle.Tools.Generator.Generators
 {
@@ -25,14 +26,16 @@ namespace Dyndle.Tools.Generator.Generators
         protected ICodeWriter CodeWriter { get; set; }
         private ModelDefinition currentViewModel = null;
         protected SessionAwareCoreServiceClient Client { get; set; }
-        protected GeneratorConfiguration Config { get; set; }
+        protected IGeneratorConfiguration Config { get; set; }
         protected ILog log;
         protected SchemaCollector SchemaCollector { get; set; }
         protected TemplateCollector TemplateCollector { get; set; }
         public abstract string FileExtension { get; }
 
-        public GeneratorBase(GeneratorConfiguration config)
+        public GeneratorBase(IGeneratorConfiguration config)
         {
+            DefaultConfigurationSetter.ApplyDefaults(config);
+
             log = LogManager.GetLogger(GetType());
             Logger.Setup(config);
             log.Debug($"started {GetType().Name}");

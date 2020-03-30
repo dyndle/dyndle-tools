@@ -22,7 +22,7 @@ namespace Dyndle.Tools.Generator.Generators
     public class ViewGenerator : GeneratorBase, IToolsModule
     {
 
-        public ViewGenerator(GeneratorConfiguration config) : base(config)
+        public ViewGenerator(IGeneratorConfiguration config) : base(config)
         {
             CodeWriter = new RazorCodeWriter(config);
         }

@@ -46,9 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConfigurationFactory.cs" />
     <Compile Include="Options\AddEnvironmentOptions.cs" />
-    <Compile Include="Options\GeneratorOptions.cs" />
+    <Compile Include="Options\GeneratorConfiguration.cs" />
     <Compile Include="Options\ListEnvironmentOptions.cs" />
     <Compile Include="Options\ModelOptions.cs" />
     <Compile Include="Options\Options.cs" />

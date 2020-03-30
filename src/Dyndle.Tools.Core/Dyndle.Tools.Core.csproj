@@ -54,7 +54,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\CoreConfiguration.cs" />
+    <Compile Include="Configuration\ICoreConfiguration.cs" />
     <Compile Include="Configuration\IConfiguration.cs" />
     <Compile Include="EnvironmentManager.cs" />
     <Compile Include="Models\Environment.cs" />

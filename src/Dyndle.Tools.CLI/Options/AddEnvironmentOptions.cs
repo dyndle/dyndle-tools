@@ -1,9 +1,10 @@
 ﻿using CommandLine;
+using Dyndle.Tools.Environments;
 
 namespace Dyndle.Tools.CLI
 {
     [Verb("add-environment", HelpText = "Add environments")]
-    public class AddEnvironmentOptions : Options
+    public class AddEnvironmentOptions : Options, IEnvironmentsConfiguration
     {
 
         [Option("name", Required = true, HelpText = "Name of the environment (choose any name)")]
@@ -15,7 +16,7 @@ namespace Dyndle.Tools.CLI
         public string Password { get; set; }
 
         [Option("domain", Required = false, HelpText = "Tridion Domain")]
-        public string Domain { get; set; }
+        public string UserDomain { get; set; }
 
         [Option("url", Required = true, HelpText = "Tridion CMS URL")]
         public string CMSUrl { get; set; }

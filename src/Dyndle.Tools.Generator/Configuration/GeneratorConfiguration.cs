@@ -6,8 +6,7 @@ using Dyndle.Tools.Generator.Models;
 
 namespace Dyndle.Tools.Generator
 {
-    public enum ExportType { Models, Views }
-    public class GeneratorConfiguration : CoreConfiguration
+    public partial class GeneratorConfiguration : CoreConfiguration
     {
         public static readonly string DEFAULT_AUTHOR = "Anonymous";
         public static readonly string DEFAULT_MIN_DD4T_CORE_VERSION = "2.5";
@@ -27,23 +26,6 @@ namespace Dyndle.Tools.Generator
 
         public string OutputFolder { get; set; }
 
-        DirectoryInfo _workFolder;
-        public DirectoryInfo WorkFolder
-        {
-            get
-            {
-                if (_workFolder == null)
-                {
-                    var workFolderPath = Path.Combine(Path.GetTempPath(), "dyndle_" + DateTime.Now.Ticks);
-                    if (Directory.Exists(workFolderPath))
-                    {
-                        throw new Exception($"unexpected error: temporary workfolder {workFolderPath} already exists");
-                    }
-                    _workFolder = Directory.CreateDirectory(workFolderPath);
-                }
-                return _workFolder;
-            }
-        }
 
         public string ModelNamespace { get; set; }
         private string folderInProject;

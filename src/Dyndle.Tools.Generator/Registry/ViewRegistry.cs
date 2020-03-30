@@ -25,7 +25,7 @@ namespace Dyndle.Tools.Generator.Registry
         private ILog _log;
         private ViewDefinition currentView;
         private SessionAwareCoreServiceClient Client { get; set; }
-        private GeneratorConfiguration Config { get; set; }
+        private IGeneratorConfiguration Config { get; set; }
         private ModelRegistry ModelRegistry
         {
             get
@@ -34,7 +34,7 @@ namespace Dyndle.Tools.Generator.Registry
             }
         }
 
-        private ViewRegistry(GeneratorConfiguration configuration)
+        private ViewRegistry(IGeneratorConfiguration configuration)
         {
             _log = LogManager.GetLogger(this.GetType());
             currentView = null;
@@ -43,7 +43,7 @@ namespace Dyndle.Tools.Generator.Registry
             Config = configuration;
         }
 
-        public static ViewRegistry GetInstance(GeneratorConfiguration configuration)
+        public static ViewRegistry GetInstance(IGeneratorConfiguration configuration)
         {
             if (_viewRegistry == null)
             {

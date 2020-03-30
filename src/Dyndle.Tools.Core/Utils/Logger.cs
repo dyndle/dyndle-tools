@@ -11,7 +11,7 @@ namespace Dyndle.Tools.Core.Utils
     public class Logger
     {
         private static bool isSetup = false;
-        public static void Setup(CoreConfiguration configuration)
+        public static void Setup(ICoreConfiguration configuration)
         {
             if (isSetup)
             {

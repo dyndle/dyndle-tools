@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using CommandLine;
+using Dyndle.Tools.CLI;
+using Dyndle.Tools.Generator.Models;
 
-namespace Dyndle.Tools.CLI
+namespace Dyndle.Tools.Generator
 {
-    public abstract class GeneratorOptions : Options
+    public partial class GeneratorConfiguration : Options, IGeneratorConfiguration
     {
         [Option("environment", Required = false, HelpText = "Environment name (type dyndle list-environments for a list of available environments)")]
         public string Environment { get; set; }
@@ -64,6 +67,9 @@ namespace Dyndle.Tools.CLI
 
         [Option('t', "schema", Required = false, HelpText = "Tridion template id")]
         public string TemplateId { get; set; }
+        public PackageStyle PackageStyle { get; set; }
+        public ExportType ExportType { get; set; }
+        public DirectoryInfo WorkFolder { get; set; }
 
         [Option('p', "publication", Required = false, HelpText = "Tridion publication id")]
         public string PublicationId { get; set; }

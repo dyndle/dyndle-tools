@@ -23,7 +23,7 @@ namespace Dyndle.Tools.Generator.Generators
 
         private ModelDefinition currentViewModel = null;
 
-        public ModelGenerator(GeneratorConfiguration config) : base(config)
+        public ModelGenerator(IGeneratorConfiguration config) : base(config)
         {
             CodeWriter = new CsharpCodeWriter(config);
         }
