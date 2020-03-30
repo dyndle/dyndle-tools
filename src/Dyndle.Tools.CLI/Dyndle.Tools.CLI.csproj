@@ -46,9 +46,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Options.cs" />
+    <Compile Include="ConfigurationFactory.cs" />
+    <Compile Include="Options\AddEnvironmentOptions.cs" />
+    <Compile Include="Options\GeneratorOptions.cs" />
+    <Compile Include="Options\ListEnvironmentOptions.cs" />
+    <Compile Include="Options\ModelOptions.cs" />
+    <Compile Include="Options\Options.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Options\ViewOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -56,9 +62,18 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Dyndle.Tools.Core\Dyndle.Tools.Core.csproj">
+      <Project>{aaad496a-109f-49b8-9666-c3fdadc2ac29}</Project>
+      <Name>Dyndle.Tools.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dyndle.Tools.Environments\Dyndle.Tools.Environments.csproj">
+      <Project>{1f2eeca4-a90a-406d-9da7-7658595c4123}</Project>
+      <Name>Dyndle.Tools.Environments</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dyndle.Tools.Generator\Dyndle.Tools.Generator.csproj">
       <Project>{ce5030ed-9ce2-4d78-8680-94d24dbfe465}</Project>
-      <Name>Trivident.AutoViewModels.Core</Name>
+      <Name>Dyndle.Tools.Generator</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
