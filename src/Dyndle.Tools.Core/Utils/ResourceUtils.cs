@@ -12,7 +12,7 @@ namespace Dyndle.Tools.Core.Utils
     {
         public static string GetResourceAsString(string resourcePath)
         {
-            var assembly = Assembly.GetExecutingAssembly();
+            var assembly = Assembly.GetCallingAssembly();
 
             using (Stream stream = assembly.GetManifestResourceStream(resourcePath))
             using (StreamReader reader = new StreamReader(stream))

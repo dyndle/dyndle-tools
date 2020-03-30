@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using Tridion.ContentManager.CoreService.Client;
+using Environment = Dyndle.Tools.Core.Models.Environment;
 
 namespace Dyndle.Tools.Core
 {
@@ -25,10 +26,6 @@ namespace Dyndle.Tools.Core
 
         static CoreserviceClientFactory()
         {
-            _tridionCMUrl = ConfigurationManager.AppSettings["tridion-cm-url"];
-            _username = ConfigurationManager.AppSettings["username"];
-            _password = ConfigurationManager.AppSettings["password"];
-            _domain = ConfigurationManager.AppSettings["domain"];
             _version = ConfigurationManager.AppSettings["coreservice-version"];
             var trustAll = ConfigurationManager.AppSettings["trust-all-ssl-certificates"];
             if ((!string.IsNullOrEmpty(trustAll)) && (trustAll.Equals("yes", StringComparison.InvariantCultureIgnoreCase) || trustAll.Equals("true", StringComparison.InvariantCultureIgnoreCase)))
@@ -37,10 +34,23 @@ namespace Dyndle.Tools.Core
             }
         }
 
+        public static void SetEnvironment(Environment environment)
+        {
+            _tridionCMUrl = environment.CMSUrl;
+            _username = environment.Username;
+            _domain = environment.UserDomain;
+            _password = environment.Password;
+        }
+
         public static SessionAwareCoreServiceClient GetClient()
         {
             if (_clientInstance == null)
             {
+                if (_tridionCMUrl == null || _username == null || _password == null)
+                {
+                    throw new Exception("environment has not been set, always call SetEnvironment before GetClient");
+                }
+
                 Uri tridionCMUri = new Uri(_tridionCMUrl);
                 _clientInstance = Wrapper.GetCoreServiceWsHttpInstance(tridionCMUri.Host, tridionCMUri.Port, tridionCMUri.Scheme, _username, _password, _domain, _version);
             }

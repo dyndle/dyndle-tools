@@ -4,13 +4,14 @@ using log4net.Core;
 using log4net.Layout;
 using log4net.Repository.Hierarchy;
 using System.IO;
+using Dyndle.Tools.Core.Configuration;
 
 namespace Dyndle.Tools.Core.Utils
 {
     public class Logger
     {
         private static bool isSetup = false;
-        public static void Setup(IConfiguration configuration)
+        public static void Setup(ICoreConfiguration configuration)
         {
             if (isSetup)
             {
@@ -45,5 +46,4 @@ namespace Dyndle.Tools.Core.Utils
             isSetup = true;
         }
     }
-    
 }

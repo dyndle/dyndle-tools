@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Dyndle.Tools.Core")]
+[assembly: AssemblyTitle("Dyndle.Tools.Environments")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Dyndle.Tools.Core")]
+[assembly: AssemblyProduct("Dyndle.Tools.Environments")]
 [assembly: AssemblyCopyright("Copyright ©  2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("aaad496a-109f-49b8-9666-c3fdadc2ac29")]
+[assembly: Guid("1f2eeca4-a90a-406d-9da7-7658595c4123")]
 
 // Version information for an assembly consists of the following four values:
 //
