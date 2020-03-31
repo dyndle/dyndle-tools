@@ -1,0 +1,47 @@
+﻿<xsd:schema elementFormDefault="qualified" targetNamespace="http://www.dyndle.com/schemas/templatemetadata" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="uuid:fd312f7f-6c59-422b-834b-08a3cf8df9cb" xmlns:tcmi="http://www.tridion.com/ContentManager/5.0/Instance">
+  <xsd:import namespace="http://www.tridion.com/ContentManager/5.0/Instance"></xsd:import>
+  <xsd:annotation>
+    <xsd:appinfo>
+      <tcm:Labels xmlns:tcm="http://www.tridion.com/ContentManager/5.0">
+        <tcm:Label ElementName="view" Metadata="true">view</tcm:Label>
+        <tcm:Label ElementName="controller" Metadata="true">controller</tcm:Label>
+        <tcm:Label ElementName="action" Metadata="true">action</tcm:Label>
+        <tcm:Label ElementName="region" Metadata="true">region</tcm:Label>
+      </tcm:Labels>
+    </xsd:appinfo>
+  </xsd:annotation>
+  <xsd:element name="Metadata">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="view" minOccurs="1" maxOccurs="1" type="xsd:normalizedString">
+          <xsd:annotation>
+            <xsd:appinfo>
+              <tcm:ExtensionXml xmlns:tcm="http://www.tridion.com/ContentManager/5.0"></tcm:ExtensionXml>
+            </xsd:appinfo>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="controller" minOccurs="0" maxOccurs="1" type="xsd:normalizedString">
+          <xsd:annotation>
+            <xsd:appinfo>
+              <tcm:ExtensionXml xmlns:tcm="http://www.tridion.com/ContentManager/5.0"></tcm:ExtensionXml>
+            </xsd:appinfo>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="action" minOccurs="0" maxOccurs="1" type="xsd:normalizedString">
+          <xsd:annotation>
+            <xsd:appinfo>
+              <tcm:ExtensionXml xmlns:tcm="http://www.tridion.com/ContentManager/5.0"></tcm:ExtensionXml>
+            </xsd:appinfo>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="region" minOccurs="0" maxOccurs="1" type="xsd:normalizedString">
+          <xsd:annotation>
+            <xsd:appinfo>
+              <tcm:ExtensionXml xmlns:tcm="http://www.tridion.com/ContentManager/5.0"></tcm:ExtensionXml>
+            </xsd:appinfo>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+</xsd:schema>

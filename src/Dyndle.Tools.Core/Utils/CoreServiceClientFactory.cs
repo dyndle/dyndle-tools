@@ -26,9 +26,10 @@ namespace Dyndle.Tools.Core
 
         static CoreserviceClientFactory()
         {
-            _version = ConfigurationManager.AppSettings["coreservice-version"];
-            var trustAll = ConfigurationManager.AppSettings["trust-all-ssl-certificates"];
-            if ((!string.IsNullOrEmpty(trustAll)) && (trustAll.Equals("yes", StringComparison.InvariantCultureIgnoreCase) || trustAll.Equals("true", StringComparison.InvariantCultureIgnoreCase)))
+            // the following settings are hard-coded for now, perhaps we will make this configuration later 
+            _version = "201603";
+            var trustAll = true;
+            if (trustAll)
             {
                 ServicePointManager.ServerCertificateValidationCallback += new System.Net.Security.RemoteCertificateValidationCallback(EasyCertCheck);
             }

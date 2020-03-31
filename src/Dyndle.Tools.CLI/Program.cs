@@ -23,11 +23,12 @@ namespace Dyndle.Tools.CLI
             try
             {
 
-            Parser.Default.ParseArguments<ModelOptions, ViewOptions, AddEnvironmentOptions, ListEnvironmentOptions>(args)
+            Parser.Default.ParseArguments<ModelOptions, ViewOptions, AddEnvironmentOptions, ListEnvironmentOptions, InstallerOptions>(args)
               .WithParsed((ModelOptions opts) => ExportModels(opts))
               .WithParsed((ViewOptions opts) => ExportViews(opts))
               .WithParsed((AddEnvironmentOptions opts) => AddEnvironment(opts))
               .WithParsed((ListEnvironmentOptions opts) => ListEnvironments(opts))
+              .WithParsed((InstallerOptions opts) => Install(opts))
               .WithNotParsed((errs) => HandleParseError(errs));
                 // Console.ReadKey();
 
@@ -77,6 +78,24 @@ namespace Dyndle.Tools.CLI
 
             var packagePath = viewGenerator.Run();
             Console.WriteLine("output created at " + packagePath);
+        }
+
+        private static void Install(InstallerOptions opts)
+        {
+
+            var env = EnvironmentManager.Get(opts.Environment);
+            if (env == null)
+            {
+                Console.WriteLine(
+                    "you must create an environment before you can generate models or views - try dyndle help add-environment");
+                return;
+            }
+            CoreserviceClientFactory.SetEnvironment(env);
+
+            var installer = new Environments.Installer(opts);
+
+            var output = installer.Run();
+            Console.WriteLine(output);
         }
 
         private static void AddEnvironment(AddEnvironmentOptions opts)
