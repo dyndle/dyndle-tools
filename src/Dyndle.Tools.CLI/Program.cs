@@ -23,11 +23,12 @@ namespace Dyndle.Tools.CLI
             try
             {
 
-            Parser.Default.ParseArguments<ModelOptions, ViewOptions, AddEnvironmentOptions, ListEnvironmentOptions, InstallerOptions>(args)
+            Parser.Default.ParseArguments<ModelOptions, ViewOptions, AddEnvironmentOptions, ListEnvironmentOptions, InstallerOptions, CreateInstallPackageOptions>(args)
               .WithParsed((ModelOptions opts) => ExportModels(opts))
               .WithParsed((ViewOptions opts) => ExportViews(opts))
               .WithParsed((AddEnvironmentOptions opts) => AddEnvironment(opts))
               .WithParsed((ListEnvironmentOptions opts) => ListEnvironments(opts))
+              .WithParsed((CreateInstallPackageOptions opts) => CreateInstallPackage(opts))
               .WithParsed((InstallerOptions opts) => Install(opts))
               .WithNotParsed((errs) => HandleParseError(errs));
                 // Console.ReadKey();
@@ -55,9 +56,9 @@ namespace Dyndle.Tools.CLI
                 return;
             }
             CoreserviceClientFactory.SetEnvironment(env);
-            var modelGenerator = new ModelGenerator(opts);
+            var module = new ModelGenerator(opts);
 
-            var packagePath = modelGenerator.Run();
+            var packagePath = module.Run();
             Console.WriteLine("output created at " + packagePath);
         }
 
@@ -73,10 +74,10 @@ namespace Dyndle.Tools.CLI
             }
             CoreserviceClientFactory.SetEnvironment(env);
 
-            var viewGenerator = new ViewGenerator(opts);
+            var module = new ViewGenerator(opts);
 
 
-            var packagePath = viewGenerator.Run();
+            var packagePath = module.Run();
             Console.WriteLine("output created at " + packagePath);
         }
 
@@ -87,15 +88,34 @@ namespace Dyndle.Tools.CLI
             if (env == null)
             {
                 Console.WriteLine(
-                    "you must create an environment before you can generate models or views - try dyndle help add-environment");
+                    "you must create an environment first - try dyndle help add-environment");
                 return;
             }
             CoreserviceClientFactory.SetEnvironment(env);
 
-            var installer = new Environments.Installer(opts);
+            var module = new Installer.Installer(opts);
 
-            var output = installer.Run();
+            var output = module.Run();
             Console.WriteLine(output);
+        }
+
+        private static void CreateInstallPackage(CreateInstallPackageOptions opts)
+        {
+#if DEBUG
+            var env = EnvironmentManager.Get(opts.Environment);
+            if (env == null)
+            {
+                Console.WriteLine(
+                    "you must create an environment first - try dyndle help add-environment");
+                return;
+            }
+            CoreserviceClientFactory.SetEnvironment(env);
+
+            var module = new InstallPackageCreator.InstallPackageCreator(opts);
+
+            var output = module.Run();
+            Console.WriteLine(output);
+#endif
         }
 
         private static void AddEnvironment(AddEnvironmentOptions opts)

@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Dyndle.Tools.Core.ImportExport;
 using Dyndle.Tools.Core.Utils;
+using Newtonsoft.Json;
 using Tridion.ContentManager.CoreService.Client;
 using ItemType = Dyndle.Tools.Core.ImportExport.ItemType;
 
-namespace Dyndle.Tools.Installer.Test
+namespace Dyndle.Tools.InstallPackageCreator
 {
     public static class ModelFactory
     {
@@ -21,6 +22,8 @@ namespace Dyndle.Tools.Installer.Test
                     return CreateSchema(data);
                 case TemplateBuildingBlockData data:
                     return CreateTBB(data);
+                case PageData data:
+                    return CreatePage(data);
                 case PageTemplateData data:
                     return CreatePageTemplate(data);
                 case ComponentTemplateData data:
@@ -87,6 +90,20 @@ namespace Dyndle.Tools.Installer.Test
                 Name = componentTemplateData.Title,
                 Content = componentTemplateData.Content,
                 SourceId = componentTemplateData.Id
+            };
+            return importItem;
+        }
+
+        public static ImportItem CreatePage(PageData pageData)
+        {
+            var importItem = new ImportItem()
+            {
+                ItemType = ItemType.Page,
+                Name = pageData.Title,
+                Content = JsonConvert.SerializeObject(pageData.ComponentPresentations),
+                PageTemplateId = pageData.PageTemplate.IdRef,
+                Filename = pageData.FileName,
+                SourceId = pageData.Id
             };
             return importItem;
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Dyndle.Tools.Core.Utils
 {
@@ -43,5 +44,28 @@ namespace Dyndle.Tools.Core.Utils
             // note: when forcing a different value, the output cannot be the same as the input
             return forceDifferentValue ? input + "Item" : input;
         }
+
+
+        public static string ParseId(this string uri)
+        {
+            if (string.IsNullOrEmpty(uri))
+            {
+                return uri;
+            }
+            TcmUri tcmUri = new TcmUri(uri);
+            return Convert.ToString(tcmUri.ItemId);
+        }
+
+        public static string ToPublicationId(this string uri, string targetUri)
+        {
+            if (string.IsNullOrEmpty(uri) || string.IsNullOrEmpty(targetUri))
+            {
+                return uri;
+            }
+            TcmUri tcmUri = new TcmUri(uri);
+            TcmUri targetTcmUri = new TcmUri(targetUri);
+            return tcmUri.ToPublication(targetTcmUri).ToString();
+        }
+
     }
 }

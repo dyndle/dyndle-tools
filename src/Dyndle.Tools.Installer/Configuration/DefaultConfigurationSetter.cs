@@ -22,12 +22,9 @@ namespace Dyndle.Tools.Installer.Configuration
                 installerConfiguration.WorkFolder = Directory.CreateDirectory(workFolderPath);
             }
 
-            installerConfiguration.MainPublication = AddTcmPrefix(installerConfiguration.MainPublication);
-            installerConfiguration.PagePublication = AddTcmPrefix(installerConfiguration.PagePublication);
-            installerConfiguration.PageTemplateFolder = AddTcmPrefix(installerConfiguration.PageTemplateFolder);
-            installerConfiguration.ComponentTemplateFolder = AddTcmPrefix(installerConfiguration.ComponentTemplateFolder);
-            installerConfiguration.SystemSG = AddTcmPrefix(installerConfiguration.SystemSG);
-            installerConfiguration.TBBFolder = AddTcmPrefix(installerConfiguration.TBBFolder);
+            installerConfiguration.DyndleFolder = AddTcmPrefix(installerConfiguration.DyndleFolder);
+            installerConfiguration.RootStructureGroup = AddTcmPrefix(installerConfiguration.RootStructureGroup);
+            installerConfiguration.SystemStructureGroup = AddTcmPrefix(installerConfiguration.SystemStructureGroup);
 
 
         }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Dyndle.Tools.Installer.Models
+namespace Dyndle.Tools.Core.ImportExport
 {
     public class Reference
     {

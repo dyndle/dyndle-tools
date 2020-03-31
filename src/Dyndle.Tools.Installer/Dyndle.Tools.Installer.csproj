@@ -51,8 +51,6 @@
     <Compile Include="Configuration\DefaultConfigurationSetter.cs" />
     <Compile Include="Configuration\IInstallerConfiguration.cs" />
     <Compile Include="Installer.cs" />
-    <Compile Include="Models\ImportItem.cs" />
-    <Compile Include="Models\Reference.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -67,6 +65,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\Dyndle.Templates.merged.dll" />
     <EmbeddedResource Include="Resources\TcmUploadAssembly.exe" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -63,6 +63,11 @@ namespace Dyndle.Tools.Core
             return true;
         }
 
+        public static StreamUploadClient GetUploadClient()
+        {
+            return Wrapper.GetUploadClient(_tridionCMUrl, _username, _password, _domain, _version);
+        }
+
     
     }
 
@@ -97,6 +102,25 @@ namespace Dyndle.Tools.Core
             }
 
             return Wrapper.Instance;
+        }
+
+        public static StreamUploadClient GetUploadClient(string url, string username, string password, string domain, string version)
+        {
+            StreamUploadClient uploadClient = new StreamUploadClient((Binding)new BasicHttpBinding()
+            {
+                MessageEncoding = WSMessageEncoding.Mtom,
+                TransferMode = TransferMode.StreamedRequest
+            }, new EndpointAddress(string.Format("{0}/webservices/CoreService{1}.svc/streamUpload_basicHttp", url, version)));
+            // http://localhost/webservices/CoreService201701.svc/streamUpload_basicHttp
+            if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
+            {
+                ((ClientBase<IStreamUpload>)uploadClient).ClientCredentials.Windows.ClientCredential.UserName = username;
+                ((ClientBase<IStreamUpload>)uploadClient).ClientCredentials.Windows.ClientCredential.Password = password;
+            }
+            if (!string.IsNullOrEmpty(domain))
+                ((ClientBase<IStreamUpload>)uploadClient).ClientCredentials.Windows.ClientCredential.Domain = string.IsNullOrEmpty(domain) ? "." : domain;
+
+            return uploadClient;
         }
 
         private static Binding GetBinding(bool isHttps)

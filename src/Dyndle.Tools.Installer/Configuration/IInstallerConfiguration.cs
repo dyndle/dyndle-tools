@@ -10,11 +10,9 @@ namespace Dyndle.Tools.Installer.Configuration
         bool InstallSitemap { get; set; }
         bool InstallSiteConfiguration { get; set; }
         DirectoryInfo WorkFolder { get; set; }
-        string MainPublication { get; set; }
-        string PagePublication { get; set; }
-        string TBBFolder { get; set; }
-        string PageTemplateFolder { get; set; }
-        string ComponentTemplateFolder { get; set; }
-        string SystemSG { get; set; }
+        string DyndleFolder { get; set; }
+        string RootStructureGroup { get; set; }
+        string SystemStructureGroup { get; set; }
+        string InstallPackagePath { get; set; }
     }
 }

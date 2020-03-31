@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dyndle.Tools.Core;
-using Dyndle.Tools.Installer.Models;
+using Dyndle.Tools.Core.ImportExport;
 using Dyndle.Tools.Installer.Test;
 using Newtonsoft.Json;
 using Tridion.ContentManager.CoreService.Client;
@@ -19,27 +19,23 @@ namespace Dyndle.Tools.Exporter
             var env = args.Length == 0 ? EnvironmentManager.GetDefault() : EnvironmentManager.Get(args[0]);
             CoreserviceClientFactory.SetEnvironment(env);
             var client = CoreserviceClientFactory.GetClient();
-
-            DirectoryInfo exportDir = Directory.Exists("export") ? new DirectoryInfo("export") : Directory.CreateDirectory("export");
-
             var references = new List<Reference>();
 
-            var sourceIds = File.ReadAllLines("items-to-export.txt");
+            var sourceIds = StorageFactory.GetItemsToExport();
             foreach (var sourceId in sourceIds)
             {
                 var item = client.Read(sourceId, new ReadOptions());
                 var importItem = ModelFactory.CreateImportItem(item);
-                var json = JsonConvert.SerializeObject(importItem);
-                File.WriteAllText(Path.Combine(exportDir.FullName, item.Id.Replace("tcm:", "")), json);
+                StorageFactory.StoreImportItem(importItem);
                 foreach (var childId in sourceIds.Where(s => s != sourceId))
                 {
-                    if (json.Contains(childId))
+                    if (importItem.Content.Contains(childId))
                     {
                         references.Add(new Reference(sourceId, childId));
                     }
                 }
             }
-            File.WriteAllText(Path.Combine(exportDir.FullName, "references.json"), JsonConvert.SerializeObject(references));
+            StorageFactory.StoreReferences(references);
 
         }
 
