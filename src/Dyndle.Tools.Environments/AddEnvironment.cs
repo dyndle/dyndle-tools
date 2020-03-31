@@ -40,9 +40,5 @@ namespace Dyndle.Tools.Environments
             }
             return "Successfully added environment";
         }
-        public bool RequiresCoreServiceClient
-        {
-            get { return false; }
-        }
     }
 }

@@ -23,8 +23,8 @@ namespace Dyndle.Tools.Installer.Configuration
             }
 
             installerConfiguration.DyndleFolder = AddTcmPrefix(installerConfiguration.DyndleFolder);
-            installerConfiguration.RootStructureGroup = AddTcmPrefix(installerConfiguration.RootStructureGroup);
-            installerConfiguration.SystemStructureGroup = AddTcmPrefix(installerConfiguration.SystemStructureGroup);
+            //installerConfiguration.RootStructureGroup = AddTcmPrefix(installerConfiguration.RootStructureGroup);
+            installerConfiguration.DyndleStructureGroup = AddTcmPrefix(installerConfiguration.DyndleStructureGroup);
 
 
         }

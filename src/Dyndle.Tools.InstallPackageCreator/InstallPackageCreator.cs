@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Dyndle.Tools.Core;
 using Dyndle.Tools.Core.ImportExport;
 using Dyndle.Tools.Core.ToolsModules;
 using Dyndle.Tools.Core.Utils;
 using Dyndle.Tools.Installer.Configuration;
-using Newtonsoft.Json;
 using Tridion.ContentManager.CoreService.Client;
-using Environment = Dyndle.Tools.Core.Models.Environment;
 
 
 namespace Dyndle.Tools.InstallPackageCreator
@@ -39,7 +33,7 @@ namespace Dyndle.Tools.InstallPackageCreator
             var references = new List<Reference>();
 
             var itemsInDyndleFolder = GetTridionItemsFromOrganizationalItem(Configuration.DyndleFolder);
-            var itemsInSystemSG = GetTridionItemsFromOrganizationalItem(Configuration.SystemStructureGroup);
+            var itemsInSystemSG = GetTridionItemsFromOrganizationalItem(Configuration.DyndleStructureGroup);
             var itemsToExport =Enumerable.Concat(itemsInDyndleFolder, itemsInSystemSG).ToList();
 
             //var sourceIds = StorageFactory.GetItemsToExport();
@@ -71,11 +65,6 @@ namespace Dyndle.Tools.InstallPackageCreator
             {
                 yield return item.Id;
             }
-        }
-
-        public bool RequiresCoreServiceClient
-        {
-            get { return false; }
         }
     }
 }

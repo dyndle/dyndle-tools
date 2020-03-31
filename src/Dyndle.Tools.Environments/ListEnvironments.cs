@@ -33,9 +33,5 @@ namespace Dyndle.Tools.Environments
 
             return sb.ToString();
         }
-        public bool RequiresCoreServiceClient
-        {
-            get { return false; }
-        }
     }
 }

@@ -22,17 +22,14 @@ namespace Dyndle.Tools.CLI
         {
             try
             {
-
-            Parser.Default.ParseArguments<ModelOptions, ViewOptions, AddEnvironmentOptions, ListEnvironmentOptions, InstallerOptions, CreateInstallPackageOptions>(args)
-              .WithParsed((ModelOptions opts) => ExportModels(opts))
-              .WithParsed((ViewOptions opts) => ExportViews(opts))
-              .WithParsed((AddEnvironmentOptions opts) => AddEnvironment(opts))
-              .WithParsed((ListEnvironmentOptions opts) => ListEnvironments(opts))
-              .WithParsed((CreateInstallPackageOptions opts) => CreateInstallPackage(opts))
-              .WithParsed((InstallerOptions opts) => Install(opts))
-              .WithNotParsed((errs) => HandleParseError(errs));
-                // Console.ReadKey();
-
+                Parser.Default.ParseArguments<ModelOptions, ViewOptions, AddEnvironmentOptions, ListEnvironmentOptions, InstallerOptions, CreateInstallPackageOptions>(args)
+                  .WithParsed((ModelOptions opts) => ExportModels(opts))
+                  .WithParsed((ViewOptions opts) => ExportViews(opts))
+                  .WithParsed((AddEnvironmentOptions opts) => AddEnvironment(opts))
+                  .WithParsed((ListEnvironmentOptions opts) => ListEnvironments(opts))
+                  .WithParsed((CreateInstallPackageOptions opts) => CreateInstallPackage(opts))
+                  .WithParsed((InstallerOptions opts) => Install(opts))
+                  .WithNotParsed((errs) => HandleParseError(errs));
             }
             catch (Exception e)
             {
@@ -43,7 +40,6 @@ namespace Dyndle.Tools.CLI
 
         private static void HandleParseError(IEnumerable<Error> errs)
         {
-            Console.ReadLine();
         }
 
         private static void ExportModels(ModelOptions opts)
@@ -64,7 +60,7 @@ namespace Dyndle.Tools.CLI
 
         private static void ExportViews(ViewOptions opts)
         {
-            
+
             var env = EnvironmentManager.Get(opts.Environment);
             if (env == null)
             {
@@ -130,6 +126,6 @@ namespace Dyndle.Tools.CLI
             var result = module.Run();
             Console.WriteLine(result);
         }
-    
+
     }
 }

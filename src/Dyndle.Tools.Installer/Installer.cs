@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -23,6 +24,7 @@ namespace Dyndle.Tools.Installer
     {
         public static readonly string ResourceRootPath = "Dyndle.Tools.Installer.Resources";
         public static readonly string DyndleTemplateResourceName = "Dyndle.Templates.merged.dll";
+        public static readonly string InstallPackageResourceName = "dyndle-cm-package.zip";
         public static readonly string TcmUploadAssemblyResourceName = "TcmUploadAssembly.exe";
         private SessionAwareCoreServiceClient Client;
 
@@ -33,17 +35,33 @@ namespace Dyndle.Tools.Installer
             Configuration = configuration;
             DefaultConfigurationSetter.ApplyDefaults(configuration);
             Client = CoreserviceClientFactory.GetClient();
-            StorageFactory.SetLocation(Configuration.InstallPackagePath);
 
         }
 
         public string Run()
         {
+
             var env = EnvironmentManager.Get(Configuration.Environment);
             if (env == null)
             {
                 return "you must create an environment before you can generate models or views - try dyndle help add-environment";
             }
+
+            if (string.IsNullOrEmpty(Configuration.InstallPackagePath))
+            {
+                // no install package path configured, we will get the embedded package from the assembly
+
+                ResourceUtils.StoreResourceOnDisk(ResourceRootPath + "." + InstallPackageResourceName, Configuration.WorkFolder, InstallPackageResourceName);
+                var packageDir = Path.Combine(Configuration.WorkFolder.FullName, "package");
+                Directory.CreateDirectory(packageDir);
+                ZipFile.ExtractToDirectory(Path.Combine(Configuration.WorkFolder.FullName, InstallPackageResourceName), packageDir);
+                StorageFactory.SetLocation(packageDir);
+            }
+            else
+            {
+                StorageFactory.SetLocation(Configuration.InstallPackagePath);
+            }
+
 
             // todo: read zipped import package from embedded resource and unzip
             var importItems = StorageFactory.GetImportItems();
@@ -51,11 +69,12 @@ namespace Dyndle.Tools.Installer
 
             mappings = new List<Reference>();
 
-
             int stopper = 10;
             while (mappings.Count() < importItems.Count() && stopper > 0)
             {
-                foreach (var importItem in importItems.Where(i => (!mappings.Any(m => m.From == i.SourceId)) && !references.Any(r => r.From == i.SourceId)))
+                var itemsWithoutDependencies = importItems.Where(i =>
+                    (mappings.All(m => m.From != i.SourceId)) && references.All(r => r.From != i.SourceId));
+                foreach (var importItem in itemsWithoutDependencies)
                 {
                     var id = Import(importItem);
                     importItem.TargetId = id;
@@ -70,14 +89,14 @@ namespace Dyndle.Tools.Installer
                     var referencedMapping = mappings.FirstOrDefault(m => m.From == reference.To);
                     if (fromItem != null)
                     {
-                        fromItem.Content = fromItem.Content.Replace(referencedMapping.From, referencedMapping.To);
+                        fromItem.Content = fromItem.Content.Replace(referencedMapping.From.ToPublicationId(fromItem.SourceId), referencedMapping.To.ToPublicationId(fromItem.SourceId));
                         if (!string.IsNullOrEmpty(fromItem.PageTemplateId))
                         {
-                            fromItem.PageTemplateId = fromItem.PageTemplateId.Replace(referencedMapping.From, referencedMapping.To);
+                            fromItem.PageTemplateId = referencedMapping.To.ToPublicationId(fromItem.SourceId);
                         }
                         if (!string.IsNullOrEmpty(fromItem.ParameterSchemaId))
                         {
-                            fromItem.ParameterSchemaId = fromItem.ParameterSchemaId.Replace(referencedMapping.From, referencedMapping.To);
+                            fromItem.ParameterSchemaId = referencedMapping.To.ToPublicationId(fromItem.SourceId);
                         }
                         referencesToRemove.Add(reference);
                     }
@@ -90,7 +109,7 @@ namespace Dyndle.Tools.Installer
 
                 stopper--;
             }
-            return $"imported {mappings.Count()} items into Tridion";
+            return $"Dyndle imported {mappings.Count()} items into Tridion. Please publish the pages in structure group {Configuration.DyndleStructureGroup}.";
         }
 
 
@@ -114,7 +133,7 @@ namespace Dyndle.Tools.Installer
 
         private string ImportSchema(ImportItem importItem)
         {
-
+            importItem.FixPublicationContext(Configuration.DyndleFolder);
             var schemaData = (SchemaData)Client.GetDefaultData(Tridion.ContentManager.CoreService.Client.ItemType.Schema,
                 Configuration.DyndleFolder, new ReadOptions());
 
@@ -133,6 +152,7 @@ namespace Dyndle.Tools.Installer
 
         private string ImportTBB(ImportItem importItem)
         {
+            importItem.FixPublicationContext(Configuration.DyndleFolder);
             var templateBuildingBlockData = (TemplateBuildingBlockData)Client.GetDefaultData(Tridion.ContentManager.CoreService.Client.ItemType.TemplateBuildingBlock,
                 Configuration.DyndleFolder, new ReadOptions());
 
@@ -180,7 +200,7 @@ namespace Dyndle.Tools.Installer
                 var mapping = mappings.FirstOrDefault(m => m.From == importItem.ParameterSchemaId);
                 if (mapping != null)
                 {
-                    templateBuildingBlockData.ParameterSchema = new LinkToSchemaData() {IdRef = mapping.To};
+                    templateBuildingBlockData.ParameterSchema = new LinkToSchemaData() { IdRef = mapping.To };
                 }
             }
 
@@ -192,13 +212,13 @@ namespace Dyndle.Tools.Installer
 
         private string ImportPage(ImportItem importItem)
         {
-            var sgUri = importItem.StoreInRoot ? Configuration.RootStructureGroup : Configuration.SystemStructureGroup;
+            importItem.FixPublicationContext(Configuration.DyndleFolder);
+            var sgUri = Configuration.DyndleStructureGroup;
             var pageData = (PageData)Client.GetDefaultData(Tridion.ContentManager.CoreService.Client.ItemType.Page, sgUri, new ReadOptions());
             pageData.Title = importItem.Name;
-
-            var fixer = new PublicationContextFixer(importItem.Content, sgUri);
-            pageData.ComponentPresentations = JsonConvert.DeserializeObject<ComponentPresentationData[]>(fixer.Fix());
-            pageData.PageTemplate = new LinkToPageTemplateData() {IdRef = importItem.PageTemplateId.ToPublicationId(sgUri)};
+           
+            pageData.ComponentPresentations = JsonConvert.DeserializeObject<ComponentPresentationData[]>(importItem.Content);
+            pageData.PageTemplate = new LinkToPageTemplateData() { IdRef = importItem.PageTemplateId.ToPublicationId(sgUri) };
             pageData.FileName = importItem.Filename;
             pageData.IsPageTemplateInherited = false;
 
@@ -210,6 +230,7 @@ namespace Dyndle.Tools.Installer
 
         private string ImportPageTemplate(ImportItem importItem)
         {
+            importItem.FixPublicationContext(Configuration.DyndleFolder);
             var pageTemplateData = (PageTemplateData)Client.GetDefaultData(Tridion.ContentManager.CoreService.Client.ItemType.PageTemplate,
                 Configuration.DyndleFolder,
                 new ReadOptions());
@@ -225,6 +246,7 @@ namespace Dyndle.Tools.Installer
 
         private string ImportComponentTemplate(ImportItem importItem)
         {
+            importItem.FixPublicationContext(Configuration.DyndleFolder);
             var componentTemplateData = (ComponentTemplateData)Client.GetDefaultData(Tridion.ContentManager.CoreService.Client.ItemType.ComponentTemplate,
                 Configuration.DyndleFolder,
                 new ReadOptions());
@@ -238,32 +260,7 @@ namespace Dyndle.Tools.Installer
             return componentTemplateData.Id;
         }
 
-        public bool RequiresCoreServiceClient
-        {
-            get { return true; }
-        }
 
-        public class PublicationContextFixer
-        {
-            private string _targetContextUri;
-            private string _content;
-
-            public PublicationContextFixer(string content, string targetContextUri)
-            {
-                _targetContextUri = targetContextUri;
-                _content = content;
-            }
-
-            public string Fix()
-            {
-                return Regex.Replace(_content, @"(tcm:[0-9\-]+)", ResolveUris);
-            }
-            private string ResolveUris(Match m)
-            {
-                string uri = m.Groups[1].Value;
-
-                return uri.ToPublicationId(_targetContextUri);
-            }
-        }
+    
     }
 }
