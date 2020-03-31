@@ -4,15 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{AAAD496A-109F-49B8-9666-C3FDADC2AC29}</ProjectGuid>
+    <ProjectGuid>{0FEAF9A3-ABEC-4787-A8C4-39A04E75EA0F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Dyndle.Tools.Core</RootNamespace>
-    <AssemblyName>Dyndle.Tools.Core</AssemblyName>
+    <RootNamespace>Dyndle.Tools.Installer</RootNamespace>
+    <AssemblyName>Dyndle.Tools.Installer</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -32,16 +31,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -54,24 +50,27 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\ICoreConfiguration.cs" />
-    <Compile Include="Configuration\IConfiguration.cs" />
-    <Compile Include="EnvironmentManager.cs" />
-    <Compile Include="ImportExport\ImportItem.cs" />
-    <Compile Include="ImportExport\Reference.cs" />
-    <Compile Include="ImportExport\StorageFactory.cs" />
-    <Compile Include="Models\Environment.cs" />
+    <Compile Include="Configuration\DefaultConfigurationSetter.cs" />
+    <Compile Include="Configuration\IInstallerConfiguration.cs" />
+    <Compile Include="Installer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ToolsModules\ToolsModule.cs" />
-    <Compile Include="Utils\CoreServiceClientFactory.cs" />
-    <Compile Include="Utils\Extensions.cs" />
-    <Compile Include="Utils\Logger.cs" />
-    <Compile Include="Utils\ResourceUtils.cs" />
-    <Compile Include="Utils\TcmUri.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Dyndle.Tools.Core\Dyndle.Tools.Core.csproj">
+      <Project>{aaad496a-109f-49b8-9666-c3fdadc2ac29}</Project>
+      <Name>Dyndle.Tools.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <EmbeddedResource Include="Resources\dyndle-cm-package.zip" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Dyndle.Templates.merged.dll" />
+    <EmbeddedResource Include="Resources\TcmUploadAssembly.exe" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

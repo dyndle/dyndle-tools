@@ -82,9 +82,5 @@ namespace Dyndle.Tools.Generator.Generators
             log.Debug($"Views created in {path}");
             return path;
         }
-        public bool RequiresCoreServiceClient
-        {
-            get { return true; }
-        }
     }
 }

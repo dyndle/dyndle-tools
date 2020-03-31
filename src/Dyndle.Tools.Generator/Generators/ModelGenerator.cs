@@ -90,10 +90,5 @@ namespace Dyndle.Tools.Generator.Generators
             log.Debug($"Models created in {path}");
             return path;
         }
-
-        public bool RequiresCoreServiceClient
-        {
-            get { return true; }
-        }
     }       
 }

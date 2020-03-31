@@ -10,6 +10,5 @@ namespace Dyndle.Tools.Core.ToolsModules
     public interface IToolsModule
     {
         string Run();
-        bool RequiresCoreServiceClient { get; }
     }
 }

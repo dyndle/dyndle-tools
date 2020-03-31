@@ -37,6 +37,12 @@ namespace Dyndle.Tools.Core
             return env;
         }
 
+        public static Environment GetDefault()
+        {
+            var envs = EnvironmentManager.GetAll();
+            return envs.FirstOrDefault(e => e.IsDefault) ?? envs.FirstOrDefault();
+        }
+
         public static void Add(string name, string cmsUrl, string username, string userdomain, string password, bool isDefault)
         {
             List<Dyndle.Tools.Core.Models.Environment> environments = null;

@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Dyndle.Tools.Core.ImportExport;
+using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Dyndle.Tools.Core.Utils
 {
@@ -42,6 +44,64 @@ namespace Dyndle.Tools.Core.Utils
             }
             // note: when forcing a different value, the output cannot be the same as the input
             return forceDifferentValue ? input + "Item" : input;
+        }
+
+
+        public static string ParseId(this string uri)
+        {
+            if (string.IsNullOrEmpty(uri))
+            {
+                return uri;
+            }
+            TcmUri tcmUri = new TcmUri(uri);
+            return Convert.ToString(tcmUri.ItemId);
+        }
+
+        public static string ToPublicationId(this string uri, string targetUri)
+        {
+            if (string.IsNullOrEmpty(uri) || string.IsNullOrEmpty(targetUri))
+            {
+                return uri;
+            }
+            TcmUri tcmUri = new TcmUri(uri);
+            TcmUri targetTcmUri = new TcmUri(targetUri);
+            return tcmUri.ToPublication(targetTcmUri).ToString();
+        }
+
+        public static string FixPublicationContext(this string content, string targetUri)
+        {
+            var fixer = new PublicationContextFixer(content, targetUri);
+            return fixer.Fix();
+        }
+
+        public static void FixPublicationContext(this ImportItem importItem, string targetUri)
+        {
+            importItem.Content = importItem.Content.FixPublicationContext(targetUri);
+            importItem.PageTemplateId = importItem.PageTemplateId.ToPublicationId(targetUri);
+            importItem.ParameterSchemaId = importItem.ParameterSchemaId.ToPublicationId(targetUri);
+        }
+
+        public class PublicationContextFixer
+        {
+            private string _targetContextUri;
+            private string _content;
+
+            public PublicationContextFixer(string content, string targetContextUri)
+            {
+                _targetContextUri = targetContextUri;
+                _content = content;
+            }
+
+            public string Fix()
+            {
+                return Regex.Replace(_content, @"(tcm:[0-9\-]+)", ResolveUris);
+            }
+            private string ResolveUris(Match m)
+            {
+                string uri = m.Groups[1].Value;
+
+                return uri.ToPublicationId(_targetContextUri);
+            }
         }
     }
 }

@@ -22,15 +22,14 @@ namespace Dyndle.Tools.CLI
         {
             try
             {
-
-            Parser.Default.ParseArguments<ModelOptions, ViewOptions, AddEnvironmentOptions, ListEnvironmentOptions>(args)
-              .WithParsed((ModelOptions opts) => ExportModels(opts))
-              .WithParsed((ViewOptions opts) => ExportViews(opts))
-              .WithParsed((AddEnvironmentOptions opts) => AddEnvironment(opts))
-              .WithParsed((ListEnvironmentOptions opts) => ListEnvironments(opts))
-              .WithNotParsed((errs) => HandleParseError(errs));
-                // Console.ReadKey();
-
+                Parser.Default.ParseArguments<ModelOptions, ViewOptions, AddEnvironmentOptions, ListEnvironmentOptions, InstallerOptions, CreateInstallPackageOptions>(args)
+                  .WithParsed((ModelOptions opts) => ExportModels(opts))
+                  .WithParsed((ViewOptions opts) => ExportViews(opts))
+                  .WithParsed((AddEnvironmentOptions opts) => AddEnvironment(opts))
+                  .WithParsed((ListEnvironmentOptions opts) => ListEnvironments(opts))
+                  .WithParsed((CreateInstallPackageOptions opts) => CreateInstallPackage(opts))
+                  .WithParsed((InstallerOptions opts) => Install(opts))
+                  .WithNotParsed((errs) => HandleParseError(errs));
             }
             catch (Exception e)
             {
@@ -41,7 +40,6 @@ namespace Dyndle.Tools.CLI
 
         private static void HandleParseError(IEnumerable<Error> errs)
         {
-            Console.ReadLine();
         }
 
         private static void ExportModels(ModelOptions opts)
@@ -54,15 +52,15 @@ namespace Dyndle.Tools.CLI
                 return;
             }
             CoreserviceClientFactory.SetEnvironment(env);
-            var modelGenerator = new ModelGenerator(opts);
+            var module = new ModelGenerator(opts);
 
-            var packagePath = modelGenerator.Run();
+            var packagePath = module.Run();
             Console.WriteLine("output created at " + packagePath);
         }
 
         private static void ExportViews(ViewOptions opts)
         {
-            
+
             var env = EnvironmentManager.Get(opts.Environment);
             if (env == null)
             {
@@ -72,11 +70,48 @@ namespace Dyndle.Tools.CLI
             }
             CoreserviceClientFactory.SetEnvironment(env);
 
-            var viewGenerator = new ViewGenerator(opts);
+            var module = new ViewGenerator(opts);
 
 
-            var packagePath = viewGenerator.Run();
+            var packagePath = module.Run();
             Console.WriteLine("output created at " + packagePath);
+        }
+
+        private static void Install(InstallerOptions opts)
+        {
+
+            var env = EnvironmentManager.Get(opts.Environment);
+            if (env == null)
+            {
+                Console.WriteLine(
+                    "you must create an environment first - try dyndle help add-environment");
+                return;
+            }
+            CoreserviceClientFactory.SetEnvironment(env);
+
+            var module = new Installer.Installer(opts);
+
+            var output = module.Run();
+            Console.WriteLine(output);
+        }
+
+        private static void CreateInstallPackage(CreateInstallPackageOptions opts)
+        {
+#if DEBUG
+            var env = EnvironmentManager.Get(opts.Environment);
+            if (env == null)
+            {
+                Console.WriteLine(
+                    "you must create an environment first - try dyndle help add-environment");
+                return;
+            }
+            CoreserviceClientFactory.SetEnvironment(env);
+
+            var module = new InstallPackageCreator.InstallPackageCreator(opts);
+
+            var output = module.Run();
+            Console.WriteLine(output);
+#endif
         }
 
         private static void AddEnvironment(AddEnvironmentOptions opts)
@@ -91,6 +126,6 @@ namespace Dyndle.Tools.CLI
             var result = module.Run();
             Console.WriteLine(result);
         }
-    
+
     }
 }
