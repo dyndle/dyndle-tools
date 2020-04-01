@@ -25,7 +25,7 @@ namespace Dyndle.Tools.Installer
         public static readonly string ResourceRootPath = "Dyndle.Tools.Installer.Resources";
         public static readonly string DyndleTemplateResourceName = "Dyndle.Templates.merged.dll";
         public static readonly string InstallPackageResourceName = "dyndle-cm-package.zip";
-        public static readonly string TcmUploadAssemblyResourceName = "TcmUploadAssembly.exe";
+
         private SessionAwareCoreServiceClient Client;
 
         private IInstallerConfiguration Configuration { get; set; }
@@ -90,13 +90,13 @@ namespace Dyndle.Tools.Installer
                     if (fromItem != null)
                     {
                         fromItem.Content = fromItem.Content.Replace(referencedMapping.From.ToPublicationId(fromItem.SourceId), referencedMapping.To.ToPublicationId(fromItem.SourceId));
-                        if (!string.IsNullOrEmpty(fromItem.PageTemplateId))
+                        if (!string.IsNullOrEmpty(fromItem.PageTemplateId) && fromItem.PageTemplateId.ToItemId() == referencedMapping.From.ToItemId())
                         {
-                            fromItem.PageTemplateId = referencedMapping.To.ToPublicationId(fromItem.SourceId);
+                            fromItem.PageTemplateId = referencedMapping.To.ToPublicationId(referencedMapping.To);
                         }
-                        if (!string.IsNullOrEmpty(fromItem.ParameterSchemaId))
+                        if (!string.IsNullOrEmpty(fromItem.ParameterSchemaId) && fromItem.ParameterSchemaId.ToItemId() == referencedMapping.From.ToItemId())
                         {
-                            fromItem.ParameterSchemaId = referencedMapping.To.ToPublicationId(fromItem.SourceId);
+                            fromItem.ParameterSchemaId = referencedMapping.To.ToPublicationId(referencedMapping.To);
                         }
                         referencesToRemove.Add(reference);
                     }
@@ -197,11 +197,7 @@ namespace Dyndle.Tools.Installer
 
             if (!string.IsNullOrEmpty(importItem.ParameterSchemaId))
             {
-                var mapping = mappings.FirstOrDefault(m => m.From == importItem.ParameterSchemaId);
-                if (mapping != null)
-                {
-                    templateBuildingBlockData.ParameterSchema = new LinkToSchemaData() { IdRef = mapping.To };
-                }
+                templateBuildingBlockData.ParameterSchema = new LinkToSchemaData() { IdRef = importItem.ParameterSchemaId };
             }
 
             templateBuildingBlockData = (TemplateBuildingBlockData)Client.Save(templateBuildingBlockData, new ReadOptions());
@@ -212,13 +208,13 @@ namespace Dyndle.Tools.Installer
 
         private string ImportPage(ImportItem importItem)
         {
-            importItem.FixPublicationContext(Configuration.DyndleFolder);
+            importItem.FixPublicationContext(Configuration.DyndleStructureGroup);
             var sgUri = Configuration.DyndleStructureGroup;
             var pageData = (PageData)Client.GetDefaultData(Tridion.ContentManager.CoreService.Client.ItemType.Page, sgUri, new ReadOptions());
             pageData.Title = importItem.Name;
            
             pageData.ComponentPresentations = JsonConvert.DeserializeObject<ComponentPresentationData[]>(importItem.Content);
-            pageData.PageTemplate = new LinkToPageTemplateData() { IdRef = importItem.PageTemplateId.ToPublicationId(sgUri) };
+            pageData.PageTemplate = new LinkToPageTemplateData() { IdRef = importItem.PageTemplateId };
             pageData.FileName = importItem.Filename;
             pageData.IsPageTemplateInherited = false;
 
