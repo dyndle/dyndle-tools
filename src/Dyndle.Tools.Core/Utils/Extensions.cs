@@ -68,6 +68,16 @@ namespace Dyndle.Tools.Core.Utils
             return tcmUri.ToPublication(targetTcmUri).ToString();
         }
 
+        public static string ToItemId(this string uri)
+        {
+            if (string.IsNullOrEmpty(uri))
+            {
+                return uri;
+            }
+            TcmUri tcmUri = new TcmUri(uri);
+            return Convert.ToString(tcmUri.ItemId);
+        }
+
         public static string FixPublicationContext(this string content, string targetUri)
         {
             var fixer = new PublicationContextFixer(content, targetUri);
