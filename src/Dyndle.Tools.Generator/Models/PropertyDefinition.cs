@@ -40,7 +40,7 @@ namespace Dyndle.Tools.Generator.Models
             field2PropertyAttributeMapping.Add(FieldType.MultiMediaLink, "LinkedComponentField");
             field2PropertyAttributeMapping.Add(FieldType.Embedded, "EmbeddedSchemaField");
             field2PropertyAttributeMapping.Add(FieldType.Entities, "ComponentPresentations");
-            field2PropertyAttributeMapping.Add(FieldType.Regions, "ComponentPresentationRegions");
+            field2PropertyAttributeMapping.Add(FieldType.Regions, "Regions");
             field2PropertyAttributeMapping.Add(FieldType.PageTitle, "PageTitle");
             field2PropertyAttributeMapping.Add(FieldType.PageId, "PageId");
         }
