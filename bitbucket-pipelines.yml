@@ -1,0 +1,22 @@
+image: mono
+definitions:
+  caches:
+    nuget: src/packages
+  steps:
+    - step: &build
+        name: Build 
+        size: 2x
+        script:
+          - apt-get update 
+          - nuget restore $BITBUCKET_CLONE_DIR/src/Dyndle.Modules.sln -c $BITBUCKET_CLONE_DIR/src/NuGet.Config
+          - msbuild /p:Configuration="Release" /p:Branch="$BITBUCKET_BRANCH" $BITBUCKET_CLONE_DIR/src/Dyndle.Tools.sln 
+pipelines:
+  branches:
+    develop:
+        - step: *build
+    master:
+        - step: *build
+    release:
+        - step: *build
+    prerelease:
+        - step: *build

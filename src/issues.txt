@@ -1,0 +1,28 @@
+=======================================
+Issues AutoViewModels
+=======================================
+- Camel casing class names
+- Visual is missing
+- Impossible to generate the same package twice
+- Author is always Anonymous
+
+
+=======================================
+Enhancement requests Alchemy
+=======================================
+
+Configuration
+=================
+- Add description to the fields
+- Allow lists (dropdowns/radio/checkbox)
+- Support for booleans, numbers and dates
+- Custom validation
+
+Controller
+================
+- Support third party DLLs (see example in my plugin)
+
+General
+================
+- Drag and drop already installed plugin should update it
+- Close Info/Configure screen if you click outside it
