@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net;
+using System.Security.Authentication.ExtendedProtection;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Principal;
 using System.ServiceModel;
@@ -127,7 +128,7 @@ namespace Dyndle.Tools.Core
         {
             if (isHttps)
             {
-                return new BasicHttpBinding()
+                return new WSHttpBinding()
                 {
                     MaxReceivedMessageSize = (long)int.MaxValue,
                     ReaderQuotas = new XmlDictionaryReaderQuotas()
@@ -137,10 +138,10 @@ namespace Dyndle.Tools.Core
                     },
                     Security =
                     {
-                        Mode = BasicHttpSecurityMode.Transport,
-                        Transport =
+                        Mode = SecurityMode.TransportWithMessageCredential,
+                        Message =
                         {
-                            ClientCredentialType = HttpClientCredentialType.Windows
+                            ClientCredentialType = MessageCredentialType.Windows                            
                         }
                     }
                 };
