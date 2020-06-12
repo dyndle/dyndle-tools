@@ -49,6 +49,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Options\UpdateEnvironmentOptions.cs" />
+    <Compile Include="Options\DeleteEnvironmentOptions.cs" />
     <Compile Include="Options\InstallerBaseOptions.cs" />
     <Compile Include="Options\CreateInstallPackageOptions.cs" />
     <Compile Include="Options\InstallerOptions.cs" />

@@ -61,6 +61,7 @@
     <Compile Include="ImportExport\Reference.cs" />
     <Compile Include="ImportExport\StorageFactory.cs" />
     <Compile Include="Models\Environment.cs" />
+    <Compile Include="Models\InvalidEnvironmentException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ToolsModules\ToolsModule.cs" />
     <Compile Include="Utils\CoreServiceClientFactory.cs" />
