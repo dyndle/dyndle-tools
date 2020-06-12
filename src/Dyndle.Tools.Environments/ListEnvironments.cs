@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dyndle.Tools.Core;
+using Dyndle.Tools.Core.Configuration;
 using Dyndle.Tools.Core.ToolsModules;
 using Dyndle.Tools.Environments;
 using Newtonsoft.Json;
@@ -15,8 +16,8 @@ namespace Dyndle.Tools.Environments
 {
     public class ListEnvironments : IToolsModule
     {
-        private IEnvironmentsConfiguration Configuration { get; set; }
-        public ListEnvironments(IEnvironmentsConfiguration configuration)
+        private ICoreConfiguration Configuration { get; set; }
+        public ListEnvironments(ICoreConfiguration configuration)
         {
             Configuration = configuration;
         }
@@ -27,8 +28,21 @@ namespace Dyndle.Tools.Environments
             var sb = new StringBuilder();
             foreach (var env in environments)
             {
-                string star = env.IsDefault ? "*" : "";
-                sb.AppendLine($"[{env.Name}]{star} {env.CMSUrl}");
+                if (Configuration.Verbose)
+                {
+                    sb.AppendLine($"Name:        {env.Name}");
+                    sb.AppendLine($"URL:         {env.CMSUrl}");
+                    sb.AppendLine($"User name:   {env.Username}");
+                    sb.AppendLine($"User domain: {env.UserDomain}");
+                    sb.AppendLine($"Password:    ***");
+                    sb.AppendLine($"Default:     {env.IsDefault}");
+                    sb.AppendLine();
+                }
+                else
+                {
+                    string star = env.IsDefault ? "*" : "";
+                    sb.AppendLine($"[{env.Name}]{star} {env.CMSUrl}");
+                }
             }
 
             return sb.ToString();
