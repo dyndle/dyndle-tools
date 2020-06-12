@@ -16,5 +16,6 @@ pipelines:
            size: 2x
            script:
            - apt-get update 
-           - nuget restore $BITBUCKET_CLONE_DIR/src/Dyndle.Tools.sln -c $BITBUCKET_CLONE_DIR/src/NuGet.Config
+           - nuget sources add -Name privaterepo2 -Source $PRIVATE_NUGET_URL -UserName $PRIVATE_NUGET_USERNAME -Password $PRIVATE_NUGET_PASSWORD
+           - nuget restore $BITBUCKET_CLONE_DIR/src/Dyndle.Tools.sln 
            - msbuild /p:Configuration="Release" /p:Branch="$BITBUCKET_BRANCH" $BITBUCKET_CLONE_DIR/src/Dyndle.Tools.sln 
