@@ -22,10 +22,12 @@ namespace Dyndle.Tools.CLI
         {
             try
             {
-                Parser.Default.ParseArguments<ModelOptions, ViewOptions, AddEnvironmentOptions, ListEnvironmentOptions, InstallerOptions, CreateInstallPackageOptions>(args)
+                Parser.Default.ParseArguments<ModelOptions, ViewOptions, AddEnvironmentOptions, UpdateEnvironmentOptions, DeleteEnvironmentOptions, ListEnvironmentOptions, InstallerOptions, CreateInstallPackageOptions>(args)
                   .WithParsed((ModelOptions opts) => ExportModels(opts))
                   .WithParsed((ViewOptions opts) => ExportViews(opts))
                   .WithParsed((AddEnvironmentOptions opts) => AddEnvironment(opts))
+                  .WithParsed((UpdateEnvironmentOptions opts) => UpdateEnvironment(opts))
+                  .WithParsed((DeleteEnvironmentOptions opts) => DeleteEnvironment(opts))
                   .WithParsed((ListEnvironmentOptions opts) => ListEnvironments(opts))
                   .WithParsed((CreateInstallPackageOptions opts) => CreateInstallPackage(opts))
                   .WithParsed((InstallerOptions opts) => Install(opts))
@@ -120,9 +122,21 @@ namespace Dyndle.Tools.CLI
             var result = module.Run();
             Console.WriteLine(result);
         }
+        private static void UpdateEnvironment(UpdateEnvironmentOptions opts)
+        {
+            IToolsModule module = new UpdateEnvironment(opts);
+            var result = module.Run();
+            Console.WriteLine(result);
+        }
         private static void ListEnvironments(ListEnvironmentOptions opts)
         {
             IToolsModule module = new ListEnvironments(opts);
+            var result = module.Run();
+            Console.WriteLine(result);
+        }
+        private static void DeleteEnvironment(DeleteEnvironmentOptions opts)
+        {
+            IToolsModule module = new DeleteEnvironment(opts);
             var result = module.Run();
             Console.WriteLine(result);
         }
