@@ -44,6 +44,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DeleteEnvironment.cs" />
+    <Compile Include="UpdateEnvironment.cs" />
+    <Compile Include="Configuration\IAddOrUpdateEnvironmentsConfiguration.cs" />
     <Compile Include="Configuration\IEnvironmentsConfiguration.cs" />
     <Compile Include="ListEnvironments.cs" />
     <Compile Include="AddEnvironment.cs" />

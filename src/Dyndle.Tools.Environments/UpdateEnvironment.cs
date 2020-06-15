@@ -11,34 +11,31 @@ using Environment = Dyndle.Tools.Core.Models.Environment;
 
 namespace Dyndle.Tools.Environments
 {
-    public class AddEnvironment : IToolsModule
+    public class UpdateEnvironment : IToolsModule
     {
         private IAddOrUpdateEnvironmentsConfiguration Configuration { get; set; }
-        public AddEnvironment(IAddOrUpdateEnvironmentsConfiguration configuration)
+        public UpdateEnvironment(IAddOrUpdateEnvironmentsConfiguration configuration)
         {
             Configuration = configuration;
         }
         public string Run()
         {
-            if (string.IsNullOrEmpty(Configuration.Name) ||
-                string.IsNullOrEmpty(Configuration.CMSUrl) ||
-                string.IsNullOrEmpty(Configuration.Username) ||
-                string.IsNullOrEmpty(Configuration.Password))
+            if (string.IsNullOrEmpty(Configuration.Name))
             {
                 return
-                    "Failed - you need to supply a name, url, username and password. Type dyndle help environment for help.";
+                    "Failed - you need to supply a name. Type dyndle help environment for help.";
             }
 
             try
             {
-                EnvironmentManager.Add(Configuration.Name, Configuration.CMSUrl, Configuration.Username,
+                EnvironmentManager.Update(Configuration.Name, Configuration.CMSUrl, Configuration.Username,
                     Configuration.UserDomain, Configuration.Password, Configuration.MakeDefault);
             }
             catch (Exception e)
             {
                 return "Failed - " + e.Message;
             }
-            return "Successfully added environment";
+            return "Successfully updated environment";
         }
     }
 }
