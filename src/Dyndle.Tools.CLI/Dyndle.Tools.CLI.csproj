@@ -113,7 +113,7 @@
     <Message Text="Optionally creating directory: $(ArtifactsFolder)" Importance="High" />
     <MakeDir Directories="$(ArtifactsFolder)" Condition="!Exists('$(ArtifactsFolder')" />
     <Message Text="MERGING: @(MergeAssemblies->'%(Filename).dll') into $(OutputAssembly)" Importance="High" />
-    <Exec Command="$(Merger) /targetplatform:v4,&quot;C:\Windows\Microsoft.NET\Framework64\v4.0.30319&quot; /lib:&quot;C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0&quot; /out:&quot;$(OutputAssembly)&quot; @(MergeAssemblies->'&quot;%(FullPath)&quot;', ' ')" />
+    <Exec Command="$(Merger) /targetplatform:v4 /out:&quot;$(OutputAssembly)&quot; @(MergeAssemblies->'&quot;%(FullPath)&quot;', ' ')" />
   </Target>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
