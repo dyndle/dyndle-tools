@@ -19,6 +19,7 @@ pipelines:
            - nuget sources add -Name real-trivident -Source $PRIVATE_REPO_REAL_URL -UserName $PRIVATE_REPO_REAL_USERNAME -Password $PRIVATE_REPO_REAL_PASSWORD
            - nuget restore $BITBUCKET_CLONE_DIR/src/Dyndle.Tools.sln 
            - msbuild /p:Configuration="Release" /p:Branch="$BITBUCKET_BRANCH" /p:Bitbucket="true" $BITBUCKET_CLONE_DIR/src/Dyndle.Tools.sln
+           - chmod +x $BITBUCKET_CLONE_DIR/dropbox.sh
            - $BITBUCKET_CLONE_DIR/dropbox.sh
            artifacts:
             - src/Dyndle.Tools.CLI/bin/Release/artifacts/dyndle.exe
