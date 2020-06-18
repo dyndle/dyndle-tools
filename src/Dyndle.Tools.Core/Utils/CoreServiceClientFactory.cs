@@ -107,10 +107,19 @@ namespace Dyndle.Tools.Core
 
         public static StreamUploadClient GetUploadClient(string url, string username, string password, string domain, string version)
         {
+            BasicHttpSecurity security = null;
+            if(url.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase)) 
+            {
+                security = new BasicHttpSecurity 
+                {
+                    Mode = BasicHttpSecurityMode.Transport
+                };
+            }
             StreamUploadClient uploadClient = new StreamUploadClient((Binding)new BasicHttpBinding()
             {
                 MessageEncoding = WSMessageEncoding.Mtom,
-                TransferMode = TransferMode.StreamedRequest
+                TransferMode = TransferMode.StreamedRequest,
+                Security = security
             }, new EndpointAddress(string.Format("{0}/webservices/CoreService{1}.svc/streamUpload_basicHttp", url, version)));
             // http://localhost/webservices/CoreService201701.svc/streamUpload_basicHttp
             if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
