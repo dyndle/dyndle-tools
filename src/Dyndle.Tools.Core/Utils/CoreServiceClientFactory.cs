@@ -46,17 +46,13 @@ namespace Dyndle.Tools.Core
 
         public static SessionAwareCoreServiceClient GetClient()
         {
-            if (_clientInstance == null)
+            if (_tridionCMUrl == null || _username == null || _password == null)
             {
-                if (_tridionCMUrl == null || _username == null || _password == null)
-                {
-                    throw new Exception("environment has not been set, always call SetEnvironment before GetClient");
-                }
-
-                Uri tridionCMUri = new Uri(_tridionCMUrl);
-                _clientInstance = Wrapper.GetCoreServiceWsHttpInstance(tridionCMUri.Host, tridionCMUri.Port, tridionCMUri.Scheme, _username, _password, _domain, _version);
+                throw new Exception("environment has not been set, always call SetEnvironment before GetClient");
             }
-            return _clientInstance;
+
+            Uri tridionCMUri = new Uri(_tridionCMUrl);
+            return Wrapper.GetCoreServiceWsHttpInstance(tridionCMUri.Host, tridionCMUri.Port, tridionCMUri.Scheme, _username, _password, _domain, _version);
         }
 
         public static bool EasyCertCheck(object sender, X509Certificate cert, X509Chain chain, System.Net.Security.SslPolicyErrors error)
@@ -69,12 +65,11 @@ namespace Dyndle.Tools.Core
             return Wrapper.GetUploadClient(_tridionCMUrl, _username, _password, _domain, _version);
         }
 
-    
+
     }
 
     public static class Wrapper
     {
-        private static SessionAwareCoreServiceClient Instance { get; set; }
 
         public static SessionAwareCoreServiceClient GetCoreServiceInstance(string hostName, string username, string password, string domain, string version, bool trustAll)
         {
@@ -95,22 +90,30 @@ namespace Dyndle.Tools.Core
             }
             if (!string.IsNullOrEmpty(domain))
                 ((ClientBase<ISessionAwareCoreService>)coreServiceClient).ClientCredentials.Windows.ClientCredential.Domain = string.IsNullOrEmpty(domain) ? "." : domain;
-            Wrapper.Instance = coreServiceClient;
 
             if (trustAll)
             {
                 ServicePointManager.ServerCertificateValidationCallback += new System.Net.Security.RemoteCertificateValidationCallback(EasyCertCheck);
             }
 
-            return Wrapper.Instance;
+            return coreServiceClient;
         }
 
         public static StreamUploadClient GetUploadClient(string url, string username, string password, string domain, string version)
         {
+            BasicHttpSecurity security = null;
+            if (url.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase))
+            {
+                security = new BasicHttpSecurity
+                {
+                    Mode = BasicHttpSecurityMode.Transport
+                };
+            }
             StreamUploadClient uploadClient = new StreamUploadClient((Binding)new BasicHttpBinding()
             {
                 MessageEncoding = WSMessageEncoding.Mtom,
-                TransferMode = TransferMode.StreamedRequest
+                TransferMode = TransferMode.StreamedRequest,
+                Security = security
             }, new EndpointAddress(string.Format("{0}/webservices/CoreService{1}.svc/streamUpload_basicHttp", url, version)));
             // http://localhost/webservices/CoreService201701.svc/streamUpload_basicHttp
             if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
@@ -141,7 +144,7 @@ namespace Dyndle.Tools.Core
                         Mode = SecurityMode.TransportWithMessageCredential,
                         Message =
                         {
-                            ClientCredentialType = MessageCredentialType.Windows                            
+                            ClientCredentialType = MessageCredentialType.Windows, EstablishSecurityContext = true
                         }
                     }
                 };
@@ -177,9 +180,7 @@ namespace Dyndle.Tools.Core
             }
             if (!string.IsNullOrEmpty(domain))
                 ((ClientBase<ISessionAwareCoreService>)coreServiceClient).ClientCredentials.Windows.ClientCredential.Domain = string.IsNullOrEmpty(domain) ? "." : domain;
-            Wrapper.Instance = coreServiceClient;
-            return Wrapper.Instance;
+            return coreServiceClient;
         }
-    }   
+    }
 }
-

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.ServiceModel;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ using Newtonsoft.Json;
 using Tridion.ContentManager.CoreService.Client;
 using Environment = Dyndle.Tools.Core.Models.Environment;
 using ItemType = Dyndle.Tools.Core.ImportExport.ItemType;
+using TcmItemType = Tridion.ContentManager.CoreService.Client.ItemType;
 
 
 namespace Dyndle.Tools.Installer
@@ -26,7 +28,17 @@ namespace Dyndle.Tools.Installer
         public static readonly string DyndleTemplateResourceName = "Dyndle.Templates.merged.dll";
         public static readonly string InstallPackageResourceName = "dyndle-cm-package.zip";
 
-        private SessionAwareCoreServiceClient Client;
+
+        private SessionAwareCoreServiceClient Client
+        {
+            get
+            {
+                return CoreserviceClientFactory.GetClient();
+            }
+        }
+        private FolderData DyndleFolder;
+        private StructureGroupData DyndleStructureGroup;
+        private static readonly ReadOptions DefaultReadOptions = new ReadOptions { LoadFlags = LoadFlags.WebDavUrls };
 
         private IInstallerConfiguration Configuration { get; set; }
         private List<Reference> mappings;
@@ -34,8 +46,8 @@ namespace Dyndle.Tools.Installer
         {
             Configuration = configuration;
             DefaultConfigurationSetter.ApplyDefaults(configuration);
-            Client = CoreserviceClientFactory.GetClient();
-
+            DyndleFolder = Client.Read(configuration.DyndleFolder, DefaultReadOptions) as FolderData;
+            DyndleStructureGroup = Client.Read(configuration.DyndleStructureGroup, DefaultReadOptions) as StructureGroupData;
         }
 
         public string Run()
@@ -70,10 +82,17 @@ namespace Dyndle.Tools.Installer
             mappings = new List<Reference>();
 
             int stopper = 10;
+            
             while (mappings.Count() < importItems.Count() && stopper > 0)
             {
                 var itemsWithoutDependencies = importItems.Where(i =>
                     (mappings.All(m => m.From != i.SourceId)) && references.All(r => r.From != i.SourceId));
+                foreach (var importItem in itemsWithoutDependencies.Where(i => i.IsDyndleMergedDll))
+                {
+                    var id = Import(importItem);
+                    importItem.TargetId = id;
+                    mappings.Add(new Reference(importItem.SourceId, importItem.TargetId));
+                }
                 foreach (var importItem in itemsWithoutDependencies)
                 {
                     var id = Import(importItem);
@@ -112,30 +131,91 @@ namespace Dyndle.Tools.Installer
             return $"Dyndle imported {mappings.Count()} items into Tridion. Please publish the pages in structure group {Configuration.DyndleStructureGroup}.";
         }
 
+        private (TcmItemType tcmItemType, string) GetItemTypeData(ItemType itemType)
+        {
+            switch (itemType)
+            {
+                case ItemType.Component:
+                    return (TcmItemType.Component, ".xml");
+                case ItemType.ComponentTemplate:
+                    return (TcmItemType.ComponentTemplate, ".tctcmp");
+                case ItemType.Page:
+                    return (TcmItemType.Page, ".tpg");
+                case ItemType.PageTemplate:
+                    return (TcmItemType.PageTemplate, ".tptcmp");
+                case ItemType.Schema:
+                    return (TcmItemType.Schema, ".xsd");
+                case ItemType.TemplateBuildingBlock:
+                    return (TcmItemType.TemplateBuildingBlock, ".tbbcmp");
+                default:
+                    return (TcmItemType.UnknownByClient, null);
+            }
+        }
+
+        private T GetOrCreateNew<T>(ImportItem importItem) where T : VersionedItemData
+        {
+            var (tcmItemType, fileExtension) = GetItemTypeData(importItem.ItemType);
+            if (importItem.IsDyndleMergedDll)
+            {
+                fileExtension = ".tbbasm";
+            }
+            string basepath;
+            string organizationalItemURI;
+            if (ItemType.Page.Equals(importItem.ItemType))
+            {
+                basepath = DyndleStructureGroup.LocationInfo.WebDavUrl;
+                organizationalItemURI = DyndleStructureGroup.Id;
+            }
+            else
+            {
+                basepath = DyndleFolder.LocationInfo.WebDavUrl;
+                organizationalItemURI = DyndleFolder.Id;
+            }
+            string webdavURL = $"{basepath}/{importItem.Name}{fileExtension}";
+
+            T itemData = default(T);
+            if (Client.IsExistingObject(webdavURL))
+            {
+                itemData = Client.CheckOut(webdavURL, true, DefaultReadOptions) as T;
+            }
+            else
+            {
+                itemData = Client.GetDefaultData(tcmItemType, organizationalItemURI, DefaultReadOptions) as T;
+            }
+            return itemData;
+        }
 
         private string Import(ImportItem importItem)
         {
-            switch (importItem.ItemType)
+            try
             {
-                case ItemType.Schema:
-                    return ImportSchema(importItem);
-                case ItemType.TemplateBuildingBlock:
-                    return ImportTBB(importItem);
-                case ItemType.PageTemplate:
-                    return ImportPageTemplate(importItem);
-                case ItemType.ComponentTemplate:
-                    return ImportComponentTemplate(importItem);
-                case ItemType.Page:
-                    return ImportPage(importItem);
+                switch (importItem.ItemType)
+                {
+                    case ItemType.Schema:
+                        return ImportSchema(importItem);
+                    case ItemType.TemplateBuildingBlock:
+                        return ImportTBB(importItem);
+                    case ItemType.PageTemplate:
+                        return ImportPageTemplate(importItem);
+                    case ItemType.ComponentTemplate:
+                        return ImportComponentTemplate(importItem);
+                    case ItemType.Page:
+                        return ImportPage(importItem);
+                }
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            
             throw new Exception("unhandled item type " + importItem.ItemType);
         }
 
         private string ImportSchema(ImportItem importItem)
         {
             importItem.FixPublicationContext(Configuration.DyndleFolder);
-            var schemaData = (SchemaData)Client.GetDefaultData(Tridion.ContentManager.CoreService.Client.ItemType.Schema,
-                Configuration.DyndleFolder, new ReadOptions());
+
+            var schemaData = GetOrCreateNew<SchemaData>(importItem);
 
             schemaData.Title = importItem.Name;
             schemaData.NamespaceUri = importItem.Namespace;
@@ -153,8 +233,7 @@ namespace Dyndle.Tools.Installer
         private string ImportTBB(ImportItem importItem)
         {
             importItem.FixPublicationContext(Configuration.DyndleFolder);
-            var templateBuildingBlockData = (TemplateBuildingBlockData)Client.GetDefaultData(Tridion.ContentManager.CoreService.Client.ItemType.TemplateBuildingBlock,
-                Configuration.DyndleFolder, new ReadOptions());
+            var templateBuildingBlockData = GetOrCreateNew<TemplateBuildingBlockData>(importItem);
 
             templateBuildingBlockData.Title = importItem.Name;
             templateBuildingBlockData.TemplateType = importItem.TemplateType;
@@ -209,10 +288,9 @@ namespace Dyndle.Tools.Installer
         private string ImportPage(ImportItem importItem)
         {
             importItem.FixPublicationContext(Configuration.DyndleStructureGroup);
-            var sgUri = Configuration.DyndleStructureGroup;
-            var pageData = (PageData)Client.GetDefaultData(Tridion.ContentManager.CoreService.Client.ItemType.Page, sgUri, new ReadOptions());
+            var pageData = GetOrCreateNew<PageData>(importItem);
+
             pageData.Title = importItem.Name;
-           
             pageData.ComponentPresentations = JsonConvert.DeserializeObject<ComponentPresentationData[]>(importItem.Content);
             pageData.PageTemplate = new LinkToPageTemplateData() { IdRef = importItem.PageTemplateId };
             pageData.FileName = importItem.Filename;
@@ -227,9 +305,7 @@ namespace Dyndle.Tools.Installer
         private string ImportPageTemplate(ImportItem importItem)
         {
             importItem.FixPublicationContext(Configuration.DyndleFolder);
-            var pageTemplateData = (PageTemplateData)Client.GetDefaultData(Tridion.ContentManager.CoreService.Client.ItemType.PageTemplate,
-                Configuration.DyndleFolder,
-                new ReadOptions());
+            var pageTemplateData = GetOrCreateNew<PageTemplateData>(importItem);
 
             pageTemplateData.Title = importItem.Name;
             pageTemplateData.Content = importItem.Content;
@@ -243,9 +319,8 @@ namespace Dyndle.Tools.Installer
         private string ImportComponentTemplate(ImportItem importItem)
         {
             importItem.FixPublicationContext(Configuration.DyndleFolder);
-            var componentTemplateData = (ComponentTemplateData)Client.GetDefaultData(Tridion.ContentManager.CoreService.Client.ItemType.ComponentTemplate,
-                Configuration.DyndleFolder,
-                new ReadOptions());
+
+            var componentTemplateData = GetOrCreateNew<ComponentTemplateData>(importItem);
 
             componentTemplateData.Title = importItem.Name;
             componentTemplateData.Content = importItem.Content;
@@ -255,8 +330,5 @@ namespace Dyndle.Tools.Installer
 
             return componentTemplateData.Id;
         }
-
-
-    
     }
 }
