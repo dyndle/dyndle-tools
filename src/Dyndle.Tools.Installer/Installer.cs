@@ -29,11 +29,11 @@ namespace Dyndle.Tools.Installer
         public static readonly string InstallPackageResourceName = "dyndle-cm-package.zip";
 
 
-        private SessionAwareCoreServiceClient Client
+        private ICoreService Client
         {
             get
             {
-                return CoreserviceClientFactory.GetClient();
+                return AlternativeCoreServiceClientFactory.GetClient();
             }
         }
         private FolderData DyndleFolder;
