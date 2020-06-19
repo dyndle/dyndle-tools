@@ -43,7 +43,6 @@ namespace Dyndle.Tools.Generator.Generators
             SchemaCollector = new SchemaCollector(config);
             TemplateCollector = new TemplateCollector(config);
             Client = CoreserviceClientFactory.GetClient();
-            
         }
 
         //public string Generate()
@@ -229,18 +228,15 @@ namespace Dyndle.Tools.Generator.Generators
                 builder.Save(stream);
             }
 
-            // finally, move package to the specified output folder
-            if (string.IsNullOrEmpty(Config.OutputFolder))
-            {
-                return packageFile;
-            }
+            // if no output folder was specified, use current directory instead
+            Config.OutputFolder = string.IsNullOrEmpty(Config.OutputFolder) ? Directory.GetCurrentDirectory() : Config.OutputFolder; 
             var outputFileName = Path.Combine(Config.OutputFolder, builder.Id + "." + builder.Version + ".nupkg");
+            if (File.Exists(outputFileName))
+            {
+                outputFileName = Path.Combine(Config.OutputFolder, builder.Id + "." + builder.Version + DateTime.Now.ToString("_yyyyMMddHHmmss") +".nupkg");
+            }
             File.Move(packageFile, outputFileName);
             return outputFileName;
         }
-
-      
-
-   
     }
 }
