@@ -33,7 +33,7 @@ namespace Dyndle.Tools.Installer
         {
             get
             {
-                return AlternativeCoreServiceClientFactory.GetClient();
+                return CoreserviceClientFactory.GetClient();
             }
         }
         private FolderData DyndleFolder;
@@ -87,12 +87,6 @@ namespace Dyndle.Tools.Installer
             {
                 var itemsWithoutDependencies = importItems.Where(i =>
                     (mappings.All(m => m.From != i.SourceId)) && references.All(r => r.From != i.SourceId));
-                foreach (var importItem in itemsWithoutDependencies.Where(i => i.IsDyndleMergedDll))
-                {
-                    var id = Import(importItem);
-                    importItem.TargetId = id;
-                    mappings.Add(new Reference(importItem.SourceId, importItem.TargetId));
-                }
                 foreach (var importItem in itemsWithoutDependencies)
                 {
                     var id = Import(importItem);

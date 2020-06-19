@@ -25,7 +25,7 @@ namespace Dyndle.Tools.Generator.Generators
 
         protected ICodeWriter CodeWriter { get; set; }
         private ModelDefinition currentViewModel = null;
-        protected SessionAwareCoreServiceClient Client { get; set; }
+        protected ICoreService Client { get; set; }
         protected IGeneratorConfiguration Config { get; set; }
         protected ILog log;
         protected SchemaCollector SchemaCollector { get; set; }

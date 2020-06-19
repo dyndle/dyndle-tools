@@ -24,7 +24,7 @@ namespace Dyndle.Tools.Generator.Registry
 
         private ILog _log;
         private ViewDefinition currentView;
-        private SessionAwareCoreServiceClient Client { get; set; }
+        private ICoreService Client { get; set; }
         private IGeneratorConfiguration Config { get; set; }
         private ModelRegistry ModelRegistry
         {

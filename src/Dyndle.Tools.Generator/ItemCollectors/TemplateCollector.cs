@@ -19,7 +19,7 @@ namespace Dyndle.Tools.Generator.ItemCollectors
     public class TemplateCollector
     {
 
-        private SessionAwareCoreServiceClient Client { get; set; }
+        private ICoreService Client { get; set; }
         private ILog log;
 
         public TemplateCollector(IGeneratorConfiguration config)
