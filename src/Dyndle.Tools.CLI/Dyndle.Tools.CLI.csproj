@@ -109,6 +109,7 @@
       <MergeAssemblies Include="$(TargetDir)NuGet.Core.dll" />
       <MergeAssemblies Include="$(TargetDir)Tridion.ContentManager.CoreService.Client.dll" />
       <MergeAssemblies Include="$(TargetDir)log4net.dll" />
+	  <MergeAssemblies Include="$(TargetDir)System.ValueTuple.dll" />
     </ItemGroup>
     <PropertyGroup>
       <OutputAssembly>$(TargetDir)artifacts\dyndle.exe</OutputAssembly>
