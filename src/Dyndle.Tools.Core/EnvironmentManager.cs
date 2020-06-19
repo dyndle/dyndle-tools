@@ -108,6 +108,11 @@ namespace Dyndle.Tools.Core
             if (isDefault || environments.Count() == 0)
             {
                 env.IsDefault = true;
+              
+                foreach (var otherEnv in environments.Where(e => e.Name != env.Name))
+                {
+                    otherEnv.IsDefault = false;
+                }
             }
             environments.Add(env);
             StoreEnvironments(environments);
