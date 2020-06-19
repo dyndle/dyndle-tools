@@ -32,7 +32,7 @@ namespace Dyndle.Tools.Generator.CodeWriters
                 sb.AppendLine("/// View is auto-generated from Tridion template {0} ({1})", view.Title, view.TcmUri);
                 sb.AppendLine("/// Date: {0}", DateTime.Now);
                 sb.AppendLine("}");
-                sb.AppendLine("@model {0}", view.AssociatedModelDefinition.TypeName);
+                sb.AppendLine("@model {0}", view.ModelTypeName);
                 foreach (var usingStatement in Config.UsingNamespaces)
                 {
                     sb.AppendLine($"@using {usingStatement}");
@@ -42,7 +42,14 @@ namespace Dyndle.Tools.Generator.CodeWriters
                 sb.AppendLine("@using Dyndle.Modules.Core.Html");
                 sb.AppendLine("<div class=\"container\">");
                 sb.Indent(false);
-                RazorForModel(view.AssociatedModelDefinition, view.ViewName, sb);
+                if (view.AssociatedModelDefinition != null)
+                {
+                    RazorForModel(view.AssociatedModelDefinition, view.ViewName, sb);
+                }
+                else
+                {
+                    sb.AppendLine("<div class=\"container\"><!--This view is not associated with a single concrete model. Please implement it yourself--></div>");
+                }
                 sb.Outdent(false);
                 sb.AppendLine("</div>");
 

@@ -114,13 +114,13 @@
       <OutputAssembly>$(TargetDir)artifacts\dyndle.exe</OutputAssembly>
       <ArtifactsFolder>$(TargetDir)artifacts</ArtifactsFolder>
       <Merger>$(SolutionDir)packages\ILMerge.3.0.29\tools\net452\ILMerge.exe</Merger>
-	  <MergerBitbucket>$(SolutionDir)packages\ILRepack.2.0.18\tools\ILRepack.exe</MergerBitbucket>
+      <MergerBitbucket>$(SolutionDir)packages\ILRepack.2.0.18\tools\ILRepack.exe</MergerBitbucket>
     </PropertyGroup>
     <Message Text="Optionally creating directory: $(ArtifactsFolder)" Importance="High" />
     <MakeDir Directories="$(ArtifactsFolder)" Condition="!Exists('$(ArtifactsFolder')" />
     <Message Text="MERGING: @(MergeAssemblies->'%(Filename).dll') into $(OutputAssembly)" Importance="High" />
     <Exec Condition=" '$(Bitbucket)' == 'false' " Command="$(Merger) /targetplatform:v4 /out:&quot;$(OutputAssembly)&quot; @(MergeAssemblies->'&quot;%(FullPath)&quot;', ' ')" />
-	<Exec Condition=" '$(Bitbucket)' == 'true' " Command="$(MergerBitbucket) /targetplatform:v4 /out:&quot;$(OutputAssembly)&quot; @(MergeAssemblies->'&quot;%(FullPath)&quot;', ' ')" />
+    <Exec Condition=" '$(Bitbucket)' == 'true' " Command="$(MergerBitbucket) /targetplatform:v4 /out:&quot;$(OutputAssembly)&quot; @(MergeAssemblies->'&quot;%(FullPath)&quot;', ' ')" />
   </Target>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

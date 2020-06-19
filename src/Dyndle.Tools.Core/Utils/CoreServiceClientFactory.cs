@@ -1,9 +1,9 @@
-﻿using System;
+using Dyndle.Tools.Core;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net;
-using System.Security.Authentication.ExtendedProtection;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Principal;
 using System.ServiceModel;
@@ -18,7 +18,7 @@ namespace Dyndle.Tools.Core
 {
     public static class CoreserviceClientFactory
     {
-        private static SessionAwareCoreServiceClient _clientInstance;
+        private static ICoreService _clientInstance;
         private static string _tridionCMUrl;
         private static string _username;
         private static string _password;
@@ -35,7 +35,6 @@ namespace Dyndle.Tools.Core
                 ServicePointManager.ServerCertificateValidationCallback += new System.Net.Security.RemoteCertificateValidationCallback(EasyCertCheck);
             }
         }
-
         public static void SetEnvironment(Environment environment)
         {
             _tridionCMUrl = environment.CMSUrl;
@@ -44,19 +43,63 @@ namespace Dyndle.Tools.Core
             _password = environment.Password;
         }
 
-        public static SessionAwareCoreServiceClient GetClient()
+        public static ICoreService GetClient()
         {
+            return GetClient(EnvironmentManager.GetDefault());
+        }
+        public static ICoreService GetClient(string environmentName)
+        {
+            return GetClient(environmentName == null ? EnvironmentManager.GetDefault() : EnvironmentManager.Get(environmentName));
+        }
+        public static ICoreService GetClient(Environment environment)
+        {
+            Uri cmUri = new Uri(environment.CMSUrl);
+
             if (_clientInstance == null)
             {
-                if (_tridionCMUrl == null || _username == null || _password == null)
-                {
-                    throw new Exception("environment has not been set, always call SetEnvironment before GetClient");
-                }
+                var binding = GetBinding(cmUri.Scheme == "https");
 
-                Uri tridionCMUri = new Uri(_tridionCMUrl);
-                _clientInstance = Wrapper.GetCoreServiceWsHttpInstance(tridionCMUri.Host, tridionCMUri.Port, tridionCMUri.Scheme, _username, _password, _domain, _version);
+                var endpoint = _version;
+                CoreServiceClient coreServiceClient = new CoreServiceClient((Binding)binding,
+                    new EndpointAddress($"{cmUri.Scheme}://{cmUri.Host}:{cmUri.Port}/webservices/CoreService{_version}.svc/basicHttp"));
+                if (!string.IsNullOrEmpty(environment.Username) && !string.IsNullOrEmpty(environment.Password))
+                {
+                    ((ClientBase<ICoreService>)coreServiceClient).ClientCredentials.Windows.ClientCredential.UserName = environment.Username;
+                    ((ClientBase<ICoreService>)coreServiceClient).ClientCredentials.Windows.ClientCredential.Password = environment.Password;
+                }
+                if (!string.IsNullOrEmpty(environment.UserDomain))
+                    ((ClientBase<ICoreService>)coreServiceClient).ClientCredentials.Windows.ClientCredential.Domain = string.IsNullOrEmpty(environment.UserDomain) ? "." : environment.UserDomain;
+
+                _clientInstance = coreServiceClient;
             }
             return _clientInstance;
+        }
+
+        public static StreamUploadClient GetUploadClient()
+        {
+            var binding = new BasicHttpBinding()
+            {
+                MessageEncoding = WSMessageEncoding.Mtom,
+                TransferMode = TransferMode.StreamedRequest,
+            };
+            if (_tridionCMUrl.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase))
+            {
+                binding.Security = new BasicHttpSecurity
+                {
+                    Mode = BasicHttpSecurityMode.Transport
+                };
+            }
+            StreamUploadClient uploadClient = new StreamUploadClient(binding,
+                new EndpointAddress($"{_tridionCMUrl}/webservices/CoreService{_version}.svc/streamUpload_basicHttp"));
+            if (!string.IsNullOrEmpty(_username) && !string.IsNullOrEmpty(_password))
+            {
+                ((ClientBase<IStreamUpload>)uploadClient).ClientCredentials.Windows.ClientCredential.UserName = _username;
+                ((ClientBase<IStreamUpload>)uploadClient).ClientCredentials.Windows.ClientCredential.Password = _password;
+            }
+            if (!string.IsNullOrEmpty(_domain))
+                ((ClientBase<IStreamUpload>)uploadClient).ClientCredentials.Windows.ClientCredential.Domain = string.IsNullOrEmpty(_domain) ? "." : _domain;
+
+            return uploadClient;
         }
 
         public static bool EasyCertCheck(object sender, X509Certificate cert, X509Chain chain, System.Net.Security.SslPolicyErrors error)
@@ -64,71 +107,12 @@ namespace Dyndle.Tools.Core
             return true;
         }
 
-        public static StreamUploadClient GetUploadClient()
-        {
-            return Wrapper.GetUploadClient(_tridionCMUrl, _username, _password, _domain, _version);
-        }
-
-    
-    }
-
-    public static class Wrapper
-    {
-        private static SessionAwareCoreServiceClient Instance { get; set; }
-
-        public static SessionAwareCoreServiceClient GetCoreServiceInstance(string hostName, string username, string password, string domain, string version, bool trustAll)
-        {
-            var endpoint = version;
-            SessionAwareCoreServiceClient coreServiceClient = new SessionAwareCoreServiceClient((Binding)new NetTcpBinding()
-            {
-                MaxReceivedMessageSize = (long)int.MaxValue,
-                ReaderQuotas = new XmlDictionaryReaderQuotas()
-                {
-                    MaxStringContentLength = int.MaxValue,
-                    MaxArrayLength = int.MaxValue
-                }
-            }, new EndpointAddress(string.Format("net.tcp://{0}:2660/CoreService/{1}/netTcp", (object)hostName, endpoint)));
-            if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
-            {
-                ((ClientBase<ISessionAwareCoreService>)coreServiceClient).ClientCredentials.Windows.ClientCredential.UserName = username;
-                ((ClientBase<ISessionAwareCoreService>)coreServiceClient).ClientCredentials.Windows.ClientCredential.Password = password;
-            }
-            if (!string.IsNullOrEmpty(domain))
-                ((ClientBase<ISessionAwareCoreService>)coreServiceClient).ClientCredentials.Windows.ClientCredential.Domain = string.IsNullOrEmpty(domain) ? "." : domain;
-            Wrapper.Instance = coreServiceClient;
-
-            if (trustAll)
-            {
-                ServicePointManager.ServerCertificateValidationCallback += new System.Net.Security.RemoteCertificateValidationCallback(EasyCertCheck);
-            }
-
-            return Wrapper.Instance;
-        }
-
-        public static StreamUploadClient GetUploadClient(string url, string username, string password, string domain, string version)
-        {
-            StreamUploadClient uploadClient = new StreamUploadClient((Binding)new BasicHttpBinding()
-            {
-                MessageEncoding = WSMessageEncoding.Mtom,
-                TransferMode = TransferMode.StreamedRequest
-            }, new EndpointAddress(string.Format("{0}/webservices/CoreService{1}.svc/streamUpload_basicHttp", url, version)));
-            // http://localhost/webservices/CoreService201701.svc/streamUpload_basicHttp
-            if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
-            {
-                ((ClientBase<IStreamUpload>)uploadClient).ClientCredentials.Windows.ClientCredential.UserName = username;
-                ((ClientBase<IStreamUpload>)uploadClient).ClientCredentials.Windows.ClientCredential.Password = password;
-            }
-            if (!string.IsNullOrEmpty(domain))
-                ((ClientBase<IStreamUpload>)uploadClient).ClientCredentials.Windows.ClientCredential.Domain = string.IsNullOrEmpty(domain) ? "." : domain;
-
-            return uploadClient;
-        }
 
         private static Binding GetBinding(bool isHttps)
         {
             if (isHttps)
             {
-                return new WSHttpBinding()
+                Binding binding = new BasicHttpBinding()
                 {
                     MaxReceivedMessageSize = (long)int.MaxValue,
                     ReaderQuotas = new XmlDictionaryReaderQuotas()
@@ -138,48 +122,37 @@ namespace Dyndle.Tools.Core
                     },
                     Security =
                     {
-                        Mode = SecurityMode.TransportWithMessageCredential,
-                        Message =
+                        Mode = BasicHttpSecurityMode.Transport,
+                        Transport =
                         {
-                            ClientCredentialType = MessageCredentialType.Windows                            
+                            ClientCredentialType = HttpClientCredentialType.Windows
                         }
                     }
                 };
+                return binding;
             }
-            return new WSHttpBinding()
+            else
             {
-                MaxReceivedMessageSize = (long)int.MaxValue,
-                ReaderQuotas = new XmlDictionaryReaderQuotas()
+                var binding = new BasicHttpBinding
                 {
-                    MaxStringContentLength = int.MaxValue,
-                    MaxArrayLength = int.MaxValue
-                },
-                SendTimeout = new TimeSpan(0, 15, 0),
-                OpenTimeout = new TimeSpan(0, 15, 0),
-                CloseTimeout = new TimeSpan(0, 15, 0),
-                ReceiveTimeout = new TimeSpan(0, 15, 0)
-            };
-        }
-        public static bool EasyCertCheck(object sender, X509Certificate cert, X509Chain chain, System.Net.Security.SslPolicyErrors error)
-        {
-            return true;
-        }
-
-        public static SessionAwareCoreServiceClient GetCoreServiceWsHttpInstance(string hostName, int port, string protocol, string username, string password, string domain, string version)
-        {
-            var binding = GetBinding(protocol == "https");
-
-            SessionAwareCoreServiceClient coreServiceClient = new SessionAwareCoreServiceClient(binding, new EndpointAddress(string.Format("{3}://{0}:{1}/webservices/CoreService{2}.svc/wsHttp", (object)hostName, port, version, protocol)));
-            if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
-            {
-                ((ClientBase<ISessionAwareCoreService>)coreServiceClient).ClientCredentials.Windows.ClientCredential.UserName = username;
-                ((ClientBase<ISessionAwareCoreService>)coreServiceClient).ClientCredentials.Windows.ClientCredential.Password = password;
+                    MaxReceivedMessageSize = 10485760,
+                    ReaderQuotas = new XmlDictionaryReaderQuotas
+                    {
+                        MaxStringContentLength = 10485760,
+                        MaxArrayLength = 10485760
+                    },
+                    Security = new BasicHttpSecurity
+                    {
+                        Mode = BasicHttpSecurityMode.TransportCredentialOnly,
+                        Transport = new HttpTransportSecurity
+                        {
+                            ClientCredentialType = HttpClientCredentialType.Windows
+                        }
+                    }
+                };
+                return binding;
             }
-            if (!string.IsNullOrEmpty(domain))
-                ((ClientBase<ISessionAwareCoreService>)coreServiceClient).ClientCredentials.Windows.ClientCredential.Domain = string.IsNullOrEmpty(domain) ? "." : domain;
-            Wrapper.Instance = coreServiceClient;
-            return Wrapper.Instance;
         }
-    }   
+    }
 }
 
