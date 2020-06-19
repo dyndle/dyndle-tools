@@ -60,7 +60,8 @@ namespace Dyndle.Tools.Core
                 var binding = GetBinding(cmUri.Scheme == "https");
 
                 var endpoint = _version;
-                CoreServiceClient coreServiceClient = new CoreServiceClient((Binding)binding, new EndpointAddress(string.Format("{0}://{1}:{2}/webservices/CoreService{3}.svc/basicHttp", cmUri.Scheme, cmUri.Host, cmUri.Port, _version)));
+                CoreServiceClient coreServiceClient = new CoreServiceClient((Binding)binding,
+                    new EndpointAddress($"{cmUri.Scheme}://{cmUri.Host}:{cmUri.Port}/webservices/CoreService{_version}.svc/basicHttp"));
                 if (!string.IsNullOrEmpty(environment.Username) && !string.IsNullOrEmpty(environment.Password))
                 {
                     ((ClientBase<ICoreService>)coreServiceClient).ClientCredentials.Windows.ClientCredential.UserName = environment.Username;
@@ -76,21 +77,20 @@ namespace Dyndle.Tools.Core
 
         public static StreamUploadClient GetUploadClient()
         {
-            BasicHttpSecurity security = null;
+            var binding = new BasicHttpBinding()
+            {
+                MessageEncoding = WSMessageEncoding.Mtom,
+                TransferMode = TransferMode.StreamedRequest,
+            };
             if (_tridionCMUrl.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase))
             {
-                security = new BasicHttpSecurity
+                binding.Security = new BasicHttpSecurity
                 {
                     Mode = BasicHttpSecurityMode.Transport
                 };
             }
-            StreamUploadClient uploadClient = new StreamUploadClient((Binding)new BasicHttpBinding()
-            {
-                MessageEncoding = WSMessageEncoding.Mtom,
-                TransferMode = TransferMode.StreamedRequest,
-                Security = security
-            }, new EndpointAddress(string.Format("{0}/webservices/CoreService{1}.svc/streamUpload_basicHttp", _tridionCMUrl, _version)));
-            // http://localhost/webservices/CoreService201701.svc/streamUpload_basicHttp
+            StreamUploadClient uploadClient = new StreamUploadClient(binding,
+                new EndpointAddress($"{_tridionCMUrl}/webservices/CoreService{_version}.svc/streamUpload_basicHttp"));
             if (!string.IsNullOrEmpty(_username) && !string.IsNullOrEmpty(_password))
             {
                 ((ClientBase<IStreamUpload>)uploadClient).ClientCredentials.Windows.ClientCredential.UserName = _username;
@@ -121,13 +121,13 @@ namespace Dyndle.Tools.Core
                         MaxArrayLength = int.MaxValue
                     },
                     Security =
-                {
-                    Mode = BasicHttpSecurityMode.Transport,
-                    Transport =
                     {
-                        ClientCredentialType = HttpClientCredentialType.Windows
+                        Mode = BasicHttpSecurityMode.Transport,
+                        Transport =
+                        {
+                            ClientCredentialType = HttpClientCredentialType.Windows
+                        }
                     }
-                }
                 };
                 return binding;
             }
