@@ -32,7 +32,7 @@ namespace Dyndle.Tools.Generator.Registry
             }
         }
 
-        private SessionAwareCoreServiceClient Client { get; set; }
+        private ICoreService Client { get; set; }
         private IGeneratorConfiguration Config { get; set; }
 
         private ModelRegistry(IGeneratorConfiguration configuration)

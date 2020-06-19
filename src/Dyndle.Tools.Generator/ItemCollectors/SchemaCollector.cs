@@ -19,7 +19,7 @@ namespace Dyndle.Tools.Generator.ItemCollectors
     public class SchemaCollector
     {
 
-        private SessionAwareCoreServiceClient Client { get; set; }
+        private ICoreService Client { get; set; }
         private ILog log;
 
         public SchemaCollector(IGeneratorConfiguration config)

@@ -19,7 +19,7 @@ namespace Dyndle.Tools.Generator.ItemCollectors
     public class TemplateCollector
     {
 
-        private SessionAwareCoreServiceClient Client { get; set; }
+        private ICoreService Client { get; set; }
         private ILog log;
 
         public TemplateCollector(IGeneratorConfiguration config)
@@ -61,11 +61,7 @@ namespace Dyndle.Tools.Generator.ItemCollectors
         {
             log.Info("Called FindSchemasForPublication with publicationId " + publicationId);
             RepositoryItemsFilterData filterData = new RepositoryItemsFilterData();
-            filterData.ItemTypes = new[] { ItemType.PageTemplate };
-            if (!pageTemplatesOnly)
-            {
-                filterData.ItemTypes.AddRange(new[] { ItemType.ComponentTemplate });
-            }
+            filterData.ItemTypes = pageTemplatesOnly ? new[] { ItemType.PageTemplate } : new[] { ItemType.PageTemplate, ItemType.ComponentTemplate };
             filterData.Recursive = true;
             XElement resultXml = Client.GetListXml(publicationId, filterData);
             return GetConvertibleTemplates(resultXml);

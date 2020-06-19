@@ -1,22 +1,25 @@
 image: mono
+clone:
+  depth: full    # SonarCloud scanner needs the full history to assign issues properly  
 definitions:
+  services:
+    docker:
+      memory: 4096
   caches:
     nuget: src/packages
-  steps:
-    - step: &build
-        name: Build 
-        size: 2x
-        script:
-          - apt-get update 
-          - nuget restore $BITBUCKET_CLONE_DIR/src/Dyndle.Modules.sln -c $BITBUCKET_CLONE_DIR/src/NuGet.Config
-          - msbuild /p:Configuration="Release" /p:Branch="$BITBUCKET_BRANCH" $BITBUCKET_CLONE_DIR/src/Dyndle.Tools.sln 
 pipelines:
   branches:
-    develop:
-        - step: *build
+# uncomment next line to build releases as well as prereleases
+#    '{release,prerelease}':
     master:
-        - step: *build
-    release:
-        - step: *build
-    prerelease:
-        - step: *build
+        - step: 
+           size: 2x
+           script:
+           - apt-get update && apt-get install zip -y
+           - nuget sources add -Name real-trivident -Source $PRIVATE_REPO_REAL_URL -UserName $PRIVATE_REPO_REAL_USERNAME -Password $PRIVATE_REPO_REAL_PASSWORD
+           - nuget restore $BITBUCKET_CLONE_DIR/src/Dyndle.Tools.sln 
+           - msbuild /p:Configuration="Release" /p:Branch="$BITBUCKET_BRANCH" /p:Bitbucket="true" $BITBUCKET_CLONE_DIR/src/Dyndle.Tools.sln
+           - chmod +x $BITBUCKET_CLONE_DIR/dropbox.sh
+           - $BITBUCKET_CLONE_DIR/dropbox.sh
+           artifacts:
+            - src/Dyndle.Tools.CLI/bin/Release/artifacts/dyndle.exe

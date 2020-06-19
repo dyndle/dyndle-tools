@@ -13,7 +13,7 @@ namespace Dyndle.Tools.InstallPackageCreator
     public class InstallPackageCreator : IToolsModule
     {
         private IInstallerConfiguration Configuration { get; set; }
-        private SessionAwareCoreServiceClient Client { get; set; }
+        private ICoreService Client { get; set; }
         public InstallPackageCreator(IInstallerConfiguration configuration)
         {
             Configuration = configuration;
