@@ -231,10 +231,6 @@ namespace Dyndle.Tools.Generator.Generators
             // if no output folder was specified, use current directory instead
             Config.OutputFolder = string.IsNullOrEmpty(Config.OutputFolder) ? Directory.GetCurrentDirectory() : Config.OutputFolder; 
             var outputFileName = Path.Combine(Config.OutputFolder, builder.Id + "." + builder.Version + ".nupkg");
-            if (File.Exists(outputFileName))
-            {
-                outputFileName = Path.Combine(Config.OutputFolder, builder.Id + "." + builder.Version + DateTime.Now.ToString("_yyyyMMddHHmmss") +".nupkg");
-            }
             File.Move(packageFile, outputFileName);
             return outputFileName;
         }
