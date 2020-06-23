@@ -1,6 +1,6 @@
 #!/bin/bash
 
-zip $BITBUCKET_CLONE_DIR/src/Dyndle.Tools.CLI/bin/Release/artifacts/dyndle.zip $BITBUCKET_CLONE_DIR/src/Dyndle.Tools.CLI/bin/Release/artifacts/dyndle.exe
+zip -j $BITBUCKET_CLONE_DIR/src/Dyndle.Tools.CLI/bin/Release/artifacts/dyndle.zip $BITBUCKET_CLONE_DIR/src/Dyndle.Tools.CLI/bin/Release/artifacts/dyndle.exe
 
 curl -X POST https://content.dropboxapi.com/2/files/upload \
     --header "Authorization: Bearer $DROPBOX_TOKEN" \
