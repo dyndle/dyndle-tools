@@ -17,6 +17,7 @@ namespace Dyndle.Tools.Core.ImportExport
         public string RootElementName { get; set; }
         public string TemplateType { get; set; }
         public string Filename { get; set; }
+        public string FileExtension { get; set; }
         public IEnumerable<ImportItem> LinkedItems { get; set; }
         public string ParameterSchemaId { get; set; }
         public bool IsDyndleMergedDll { get; set; }
