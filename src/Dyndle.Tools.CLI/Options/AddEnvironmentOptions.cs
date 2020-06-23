@@ -12,7 +12,7 @@ namespace Dyndle.Tools.CLI
         [Option("username", Required = true, HelpText = "Tridion Username")]
         public string Username { get; set; }
 
-        [Option("password", Required = true, HelpText = "Tridion Password")]
+        [Option("password", Required = false, HelpText = "Tridion Password")]
         public string Password { get; set; }
 
         [Option("domain", Required = false, HelpText = "Tridion Domain")]
