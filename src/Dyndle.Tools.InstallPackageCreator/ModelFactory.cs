@@ -71,6 +71,7 @@ namespace Dyndle.Tools.InstallPackageCreator
             {
                 ItemType = ItemType.PageTemplate,
                 Name = pageTemplateData.Title,
+                FileExtension = pageTemplateData.FileExtension,
                 Content = pageTemplateData.Content,
                 SourceId = pageTemplateData.Id
             };

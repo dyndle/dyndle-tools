@@ -303,6 +303,7 @@ namespace Dyndle.Tools.Installer
 
             pageTemplateData.Title = importItem.Name;
             pageTemplateData.Content = importItem.Content;
+            pageTemplateData.FileExtension = importItem.FileExtension;
 
             pageTemplateData = (PageTemplateData)Client.Save(pageTemplateData, new ReadOptions());
             pageTemplateData = (PageTemplateData)Client.CheckIn(pageTemplateData.Id, true, "Dyndle installer", new ReadOptions());
