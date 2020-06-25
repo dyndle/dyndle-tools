@@ -137,7 +137,7 @@ namespace Dyndle.Tools.Generator.CodeWriters
                 }
                 else if (propertyDefinition.IsComplexType)
                 {
-                    if (propertyDefinition.TargetSchemas == null && (propertyDefinition.FieldType == FieldType.ComponentLink || propertyDefinition.FieldType == FieldType.MultiMediaLink))
+                    if ((propertyDefinition.TargetSchemas == null || propertyDefinition.TargetSchemas.Count == 0) && (propertyDefinition.FieldType == FieldType.ComponentLink || propertyDefinition.FieldType == FieldType.MultiMediaLink))
                     {
                         sb.AppendLine($"link without a specific target model<br/>Resolved URL: {varName}.Url");
                     }
