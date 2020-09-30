@@ -73,7 +73,8 @@ namespace Dyndle.Tools.InstallPackageCreator
                 Name = pageTemplateData.Title,
                 FileExtension = pageTemplateData.FileExtension,
                 Content = pageTemplateData.Content,
-                SourceId = pageTemplateData.Id
+                SourceId = pageTemplateData.Id,
+                TemplateType = pageTemplateData.TemplateType
             };
             return importItem;
         }
@@ -84,7 +85,8 @@ namespace Dyndle.Tools.InstallPackageCreator
                 ItemType = ItemType.ComponentTemplate,
                 Name = componentTemplateData.Title,
                 Content = componentTemplateData.Content,
-                SourceId = componentTemplateData.Id
+                SourceId = componentTemplateData.Id,
+                TemplateType = componentTemplateData.TemplateType
             };
             return importItem;
         }

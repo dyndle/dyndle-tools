@@ -19,16 +19,13 @@ namespace Dyndle.Tools.Core
     public static class CoreserviceClientFactory
     {
         private static ICoreService _clientInstance;
-        private static string _tridionCMUrl;
-        private static string _username;
-        private static string _password;
-        private static string _domain;
-        private static string _version;
+        private static Environment _environment;
+        private static string _version = "201603";
+
 
         static CoreserviceClientFactory()
         {
             // the following settings are hard-coded for now, perhaps we will make this configuration later 
-            _version = "201603";
             var trustAll = true;
             if (trustAll)
             {
@@ -37,15 +34,12 @@ namespace Dyndle.Tools.Core
         }
         public static void SetEnvironment(Environment environment)
         {
-            _tridionCMUrl = environment.CMSUrl;
-            _username = environment.Username;
-            _domain = environment.UserDomain;
-            _password = environment.Password;
+            _environment = environment;
         }
 
         public static ICoreService GetClient()
         {
-            return GetClient(EnvironmentManager.GetDefault());
+            return GetClient(_environment ?? EnvironmentManager.GetDefault());
         }
         public static ICoreService GetClient(string environmentName)
         {
@@ -82,7 +76,7 @@ namespace Dyndle.Tools.Core
                 MessageEncoding = WSMessageEncoding.Mtom,
                 TransferMode = TransferMode.StreamedRequest,
             };
-            if (_tridionCMUrl.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase))
+            if (_environment.CMSUrl.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase))
             {
                 binding.Security = new BasicHttpSecurity
                 {
@@ -90,14 +84,14 @@ namespace Dyndle.Tools.Core
                 };
             }
             StreamUploadClient uploadClient = new StreamUploadClient(binding,
-                new EndpointAddress($"{_tridionCMUrl}/webservices/CoreService{_version}.svc/streamUpload_basicHttp"));
-            if (!string.IsNullOrEmpty(_username) && !string.IsNullOrEmpty(_password))
+                new EndpointAddress($"{_environment.CMSUrl}/webservices/CoreService{_version}.svc/streamUpload_basicHttp"));
+            if (!string.IsNullOrEmpty(_environment.Username) && !string.IsNullOrEmpty(_environment.Password))
             {
-                ((ClientBase<IStreamUpload>)uploadClient).ClientCredentials.Windows.ClientCredential.UserName = _username;
-                ((ClientBase<IStreamUpload>)uploadClient).ClientCredentials.Windows.ClientCredential.Password = _password;
+                ((ClientBase<IStreamUpload>)uploadClient).ClientCredentials.Windows.ClientCredential.UserName = _environment.Username;
+                ((ClientBase<IStreamUpload>)uploadClient).ClientCredentials.Windows.ClientCredential.Password = _environment.Password;
             }
-            if (!string.IsNullOrEmpty(_domain))
-                ((ClientBase<IStreamUpload>)uploadClient).ClientCredentials.Windows.ClientCredential.Domain = string.IsNullOrEmpty(_domain) ? "." : _domain;
+            if (!string.IsNullOrEmpty(_environment.UserDomain))
+                ((ClientBase<IStreamUpload>)uploadClient).ClientCredentials.Windows.ClientCredential.Domain = string.IsNullOrEmpty(_environment.UserDomain) ? "." : _environment.UserDomain;
 
             return uploadClient;
         }
