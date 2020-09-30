@@ -304,6 +304,7 @@ namespace Dyndle.Tools.Installer
             pageTemplateData.Title = importItem.Name;
             pageTemplateData.Content = importItem.Content;
             pageTemplateData.FileExtension = importItem.FileExtension;
+            pageTemplateData.TemplateType = importItem.TemplateType;
 
             pageTemplateData = (PageTemplateData)Client.Save(pageTemplateData, new ReadOptions());
             pageTemplateData = (PageTemplateData)Client.CheckIn(pageTemplateData.Id, true, "Dyndle installer", new ReadOptions());
@@ -319,6 +320,7 @@ namespace Dyndle.Tools.Installer
 
             componentTemplateData.Title = importItem.Name;
             componentTemplateData.Content = importItem.Content;
+            componentTemplateData.TemplateType = importItem.TemplateType;
 
             componentTemplateData = (ComponentTemplateData)Client.Save(componentTemplateData, new ReadOptions());
             componentTemplateData = (ComponentTemplateData)Client.CheckIn(componentTemplateData.Id, true, "Dyndle installer", new ReadOptions());
