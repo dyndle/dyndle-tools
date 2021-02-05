@@ -18,7 +18,7 @@ namespace Dyndle.Tools.Generator.Models
             field2PropertyTypeMapping.Add(FieldType.MultiLineText, "string");
             field2PropertyTypeMapping.Add(FieldType.Xhtml, "System.Web.Mvc.MvcHtmlString");
             field2PropertyTypeMapping.Add(FieldType.Date, "DateTime");
-            field2PropertyTypeMapping.Add(FieldType.Number, "int");
+            field2PropertyTypeMapping.Add(FieldType.Number, "double");
             field2PropertyTypeMapping.Add(FieldType.ExternalLink, "string");
             field2PropertyTypeMapping.Add(FieldType.Keyword, "string");
             field2PropertyTypeMapping.Add(FieldType.ComponentLink, configuration.BaseClasses.Any() ? configuration.BaseClasses.FirstOrDefault() : "EntityModel");
