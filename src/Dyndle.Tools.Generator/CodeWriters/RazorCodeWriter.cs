@@ -29,7 +29,7 @@ namespace Dyndle.Tools.Generator.CodeWriters
             {
                 if (class2code.ContainsKey("Entity/" + view.ViewName))
                 {
-                    log.DebugFormat("View [" + view.ViewName + "] already exists. Skipping.");
+                    log.DebugFormat("View '{0}' of Template '{1}' with ID '{2}' already exists, skipping.", view.ViewName, view.ModelTypeName, view.TcmUri);
                     continue;
                 }
 
