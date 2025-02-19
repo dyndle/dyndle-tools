@@ -13,6 +13,7 @@ using Dyndle.Tools.Generator;
 using static Dyndle.Tools.CLI.Options;
 using Dyndle.Tools.Generator.Generators;
 using Dyndle.Tools.Generator.Models;
+using Tridion.CoreService.Tools;
 
 namespace Dyndle.Tools.CLI
 {
@@ -53,7 +54,6 @@ namespace Dyndle.Tools.CLI
                     "you must create an environment before you can generate models or views - try dyndle help add-environment");
                 return;
             }
-            CoreserviceClientFactory.SetEnvironment(env);
             var module = new ModelGenerator(opts);
 
             var packagePath = module.Run();
@@ -70,7 +70,6 @@ namespace Dyndle.Tools.CLI
                     "you must create an environment before you can generate models or views - try dyndle help add-environment");
                 return;
             }
-            CoreserviceClientFactory.SetEnvironment(env);
 
             var module = new ViewGenerator(opts);
 
@@ -89,7 +88,6 @@ namespace Dyndle.Tools.CLI
                     "you must create an environment first - try dyndle help add-environment");
                 return;
             }
-            CoreserviceClientFactory.SetEnvironment(env);
 
             var module = new Installer.Installer(opts);
 
@@ -107,7 +105,6 @@ namespace Dyndle.Tools.CLI
                     "you must create an environment first - try dyndle help add-environment");
                 return;
             }
-            CoreserviceClientFactory.SetEnvironment(env);
 
             var module = new InstallPackageCreator.InstallPackageCreator(opts);
 

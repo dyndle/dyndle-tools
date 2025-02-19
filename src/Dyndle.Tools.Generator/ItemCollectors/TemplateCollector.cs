@@ -13,6 +13,7 @@ using Dyndle.Tools.Core;
 using Tridion.ContentManager.CoreService.Client;
 using Dyndle.Tools.Generator.Models;
 using Dyndle.Tools.Core.Utils;
+using Tridion.CoreService.Tools;
 
 namespace Dyndle.Tools.Generator.ItemCollectors
 {

@@ -11,6 +11,7 @@ using Dyndle.Tools.Core.Utils;
 using Dyndle.Tools.Generator.ItemCollectors;
 using Dyndle.Tools.Generator.Models;
 using Tridion.ContentManager.CoreService.Client;
+using Tridion.CoreService.Tools;
 
 namespace Dyndle.Tools.Generator.Registry
 {
