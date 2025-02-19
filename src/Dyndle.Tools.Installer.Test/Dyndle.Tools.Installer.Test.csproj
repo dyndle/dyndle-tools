@@ -47,9 +47,6 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="Tridion.ContentManager.CoreService.Client, Version=8.5.0.466, Culture=neutral, PublicKeyToken=ddfc895746e5ee6b, processorArchitecture=MSIL">
-      <HintPath>..\packages\Tridion.CoreService.Client-85.1.0.0\lib\net45\Tridion.ContentManager.CoreService.Client.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ModelFactory.cs" />

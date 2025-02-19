@@ -9,7 +9,7 @@ using Dyndle.Tools.Core.Configuration;
 using Dyndle.Tools.Core.ToolsModules;
 using Dyndle.Tools.Environments;
 using Newtonsoft.Json;
-using Environment = Dyndle.Tools.Core.Models.Environment;
+using Tridion.CoreService.Tools;
 
 
 namespace Dyndle.Tools.Environments

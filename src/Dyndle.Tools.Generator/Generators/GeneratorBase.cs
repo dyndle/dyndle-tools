@@ -16,6 +16,7 @@ using Dyndle.Tools.Generator.ItemCollectors;
 using Dyndle.Tools.Generator.Models;
 using Dyndle.Tools.Core.Utils;
 using Dyndle.Tools.Generator.Configuration;
+using Tridion.CoreService.Tools;
 
 namespace Dyndle.Tools.Generator.Generators
 {
@@ -42,6 +43,7 @@ namespace Dyndle.Tools.Generator.Generators
             Config = config;
             SchemaCollector = new SchemaCollector(config);
             TemplateCollector = new TemplateCollector(config);
+            var env = string.IsNullOrEmpty(config.Environment) ? EnvironmentManager.GetDefault() : EnvironmentManager.Get(config.Environment);
             Client = CoreserviceClientFactory.GetClient();
         }
 

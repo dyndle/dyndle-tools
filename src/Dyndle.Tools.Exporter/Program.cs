@@ -9,6 +9,7 @@ using Dyndle.Tools.Core.ImportExport;
 using Dyndle.Tools.Installer.Test;
 using Newtonsoft.Json;
 using Tridion.ContentManager.CoreService.Client;
+using Tridion.CoreService.Tools;
 
 namespace Dyndle.Tools.Exporter
 {
@@ -17,8 +18,7 @@ namespace Dyndle.Tools.Exporter
         static void Main(string[] args)
         {
             var env = args.Length == 0 ? EnvironmentManager.GetDefault() : EnvironmentManager.Get(args[0]);
-            CoreserviceClientFactory.SetEnvironment(env);
-            var client = CoreserviceClientFactory.GetClient();
+            var client = CoreserviceClientFactory.GetClient(env);
             var references = new List<Reference>();
 
             var sourceIds = StorageFactory.GetItemsToExport();

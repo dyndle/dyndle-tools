@@ -1,5 +1,4 @@
-﻿using Dyndle.Tools.Generator.ItemCollectors;
-using log4net;
+﻿using log4net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,10 +6,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
-using Dyndle.Tools.Core;
-using Dyndle.Tools.Core.Configuration;
 using Dyndle.Tools.Generator.Models;
 using Tridion.ContentManager.CoreService.Client;
+using Tridion.CoreService.Tools;
 
 namespace Dyndle.Tools.Generator.Registry
 {

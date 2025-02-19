@@ -27,6 +27,12 @@ namespace Dyndle.Tools.Generator.CodeWriters
             log.DebugFormat("Started GenerateCode with {0} view models", viewRegistry.Views.Count);
             foreach (var view in viewRegistry.Views)
             {
+                if (class2code.ContainsKey("Entity/" + view.ViewName))
+                {
+                    log.DebugFormat("View '{0}' of Template '{1}' with ID '{2}' already exists, skipping.", view.ViewName, view.ModelTypeName, view.TcmUri);
+                    continue;
+                }
+
                 sb.AppendLine("@{");
                 sb.AppendLine("///");
                 sb.AppendLine("/// View is auto-generated from Tridion template {0} ({1})", view.Title, view.TcmUri);
