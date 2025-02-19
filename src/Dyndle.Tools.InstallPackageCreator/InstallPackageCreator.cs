@@ -6,6 +6,7 @@ using Dyndle.Tools.Core.ToolsModules;
 using Dyndle.Tools.Core.Utils;
 using Dyndle.Tools.Installer.Configuration;
 using Tridion.ContentManager.CoreService.Client;
+using Tridion.CoreService.Tools;
 
 
 namespace Dyndle.Tools.InstallPackageCreator
@@ -18,8 +19,7 @@ namespace Dyndle.Tools.InstallPackageCreator
         {
             Configuration = configuration;
             var env = EnvironmentManager.Get(Configuration.Environment);
-            CoreserviceClientFactory.SetEnvironment(env);
-            Client = CoreserviceClientFactory.GetClient();
+            Client = CoreserviceClientFactory.GetClient(env);
             DefaultConfigurationSetter.ApplyDefaults(configuration);
             StorageFactory.SetLocation(Configuration.InstallPackagePath);
         }

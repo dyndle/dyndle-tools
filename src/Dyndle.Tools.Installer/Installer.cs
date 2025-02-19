@@ -15,7 +15,7 @@ using Dyndle.Tools.Core.Utils;
 using Dyndle.Tools.Installer.Configuration;
 using Newtonsoft.Json;
 using Tridion.ContentManager.CoreService.Client;
-using Environment = Dyndle.Tools.Core.Models.Environment;
+using Tridion.CoreService.Tools;
 using ItemType = Dyndle.Tools.Core.ImportExport.ItemType;
 using TcmItemType = Tridion.ContentManager.CoreService.Client.ItemType;
 
@@ -28,14 +28,8 @@ namespace Dyndle.Tools.Installer
         public static readonly string DyndleTemplateResourceName = "Dyndle.Templates.merged.dll";
         public static readonly string InstallPackageResourceName = "dyndle-cm-package.zip";
 
-
-        private ICoreService Client
-        {
-            get
-            {
-                return CoreserviceClientFactory.GetClient();
-            }
-        }
+        private ICoreService Client { get; set; }
+        
         private FolderData DyndleFolder;
         private StructureGroupData DyndleStructureGroup;
         private static readonly ReadOptions DefaultReadOptions = new ReadOptions { LoadFlags = LoadFlags.WebDavUrls };
@@ -48,6 +42,8 @@ namespace Dyndle.Tools.Installer
             DefaultConfigurationSetter.ApplyDefaults(configuration);
             DyndleFolder = Client.Read(configuration.DyndleFolder, DefaultReadOptions) as FolderData;
             DyndleStructureGroup = Client.Read(configuration.DyndleStructureGroup, DefaultReadOptions) as StructureGroupData;
+            var env = string.IsNullOrEmpty(configuration.Environment) ? EnvironmentManager.GetDefault() : EnvironmentManager.Get(configuration.Environment);
+            Client = CoreserviceClientFactory.GetClient();
         }
 
         public string Run()
@@ -242,15 +238,14 @@ namespace Dyndle.Tools.Installer
 
                 // first, upload the merged DLL with the upload client
                 string pathOnServer = null;
-                using (var uploadClient = CoreserviceClientFactory.GetUploadClient())
-                {
+                var uploadClient = CoreserviceClientFactory.GetUploadClient();
                     using (FileStream stream =
                         new FileStream(Path.Combine(Configuration.WorkFolder.FullName, DyndleTemplateResourceName),
                             FileMode.Open))
                     {
-                        pathOnServer = uploadClient.UploadBinaryContent(accessToken, stream);
+                    UploadRequest request = new UploadRequest(accessToken, stream);
+                        pathOnServer = uploadClient.UploadBinaryContent(request)?.FilePath;
                     }
-                }
 
                 // if all went well, we now have the path of the DLL on the server
 
