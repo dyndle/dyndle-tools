@@ -16,8 +16,7 @@ pipelines:
            size: 2x
            script:
            - apt-get update && apt-get install zip -y
-           - nuget setapikey $PRIVATE_NUGET_APIKEY -Source $PRIVATE_NUGET_URL
-           - nuget sources add -Name real-trivident -Source $PRIVATE_NUGET_URL
+           - nuget sources add -Name real-trivident -Source $PRIVATE_NUGET_URL -UserName $PRIVATE_NUGET_USERNAME -Password $PRIVATE_NUGET_PAT
            - nuget restore $BITBUCKET_CLONE_DIR/src/Dyndle.Tools.sln 
            - msbuild /p:Configuration="Release" /p:Branch="$BITBUCKET_BRANCH" /p:Bitbucket="true" $BITBUCKET_CLONE_DIR/src/Dyndle.Tools.sln
            - chmod +x $BITBUCKET_CLONE_DIR/dropbox.sh
